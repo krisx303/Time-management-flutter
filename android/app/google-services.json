@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "554020921120",
+    "project_id": "time-management-app-796c5",
+    "storage_bucket": "time-management-app-796c5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:554020921120:android:59fd0576af2c861e234145",
+        "android_client_info": {
+          "package_name": "com.krisx.time_management"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "554020921120-t0cgfee3gvj4ttmh9pl274qfm3m4ec86.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwO9-h1WgtBtL_DevS7k7-KmgzLYMQSf4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "554020921120-t0cgfee3gvj4ttmh9pl274qfm3m4ec86.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
