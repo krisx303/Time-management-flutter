@@ -11,34 +11,4 @@ import androidx.annotation.NonNull;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class MainActivity extends FlutterActivity {
-
-    private Intent forService;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        forService = new Intent(MainActivity.this,MyService.class);
-
-    }
-
-    @Override
-    public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
-        GeneratedPluginRegistrant.registerWith(flutterEngine);
-        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "com.krisx.time_management")
-                .setMethodCallHandler((call, result) -> {
-                    if(call.method.equals("startService")){
-                        startService();
-                        result.success("Service Started");
-                    }
-                });
-    }
-
-    private void startService(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            startForegroundService(forService);
-        } else {
-            startService(forService);
-        }
-    }
 }

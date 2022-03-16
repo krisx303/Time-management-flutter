@@ -12,20 +12,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-///import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as image;
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:time_management/widgets/task_data.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();
 
-/// Streams are created so that app can respond to notification-related events
-/// since the plugin is initialised in the `main` function
 final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
 BehaviorSubject<ReceivedNotification>();
 
@@ -51,11 +47,6 @@ class ReceivedNotification {
 
 String? selectedNotificationPayload;
 
-/// IMPORTANT: running the following code on its own won't work as there is
-/// setup required for each platform head project.
-///
-/// Please download the complete example app from the GitHub repository where
-/// all the setup has been done
 Future<void> main() async {
   // needed if you intend to initialize in the `main` function
   WidgetsFlutterBinding.ensureInitialized();
@@ -954,8 +945,8 @@ class _HomePageState extends State<HomePage> {
     AndroidNotificationDetails(
         'other custom channel id', 'other custom channel name',
         channelDescription: 'other custom channel description',
-        icon: 'secondary_icon',
-        largeIcon: const DrawableResourceAndroidBitmap('sample_large_icon'),
+        icon: 'icon',
+        largeIcon: const DrawableResourceAndroidBitmap('icon'),
         vibrationPattern: vibrationPattern,
         enableLights: true,
         color: const Color.fromARGB(255, 255, 0, 0),
@@ -978,10 +969,15 @@ class _HomePageState extends State<HomePage> {
         'scheduled title',
         'scheduled body',
         tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
-        const NotificationDetails(
+        NotificationDetails(
             android: AndroidNotificationDetails(
                 'your channel id', 'your channel name',
-                channelDescription: 'your channel description')),
+                channelDescription: 'your channel description',
+                ongoing: true,
+                timeoutAfter: 120000,
+                showWhen: true,
+                when: DateTime.now().millisecondsSinceEpoch + (60 * 2 * 1000) + (5 * 1000)
+            )),
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime);
@@ -1053,16 +1049,7 @@ class _HomePageState extends State<HomePage> {
         'Times out after 10 seconds', platformChannelSpecifics);
   }
 
-  void startServiceInPlatform() async {
-    if(Platform.isAndroid){
-      var methodChannel = MethodChannel("com.krisx.time_management");
-      String data = await methodChannel.invokeMethod("startService");
-      debugPrint(data);
-    }
-  }
-
   Future<void> asd() async {
-    startServiceInPlatform();
     // const int maxProgress = 200;
     // DateTime start = DateTime.now();
     // for (int i = 0; i <= maxProgress; i++) {
@@ -1142,6 +1129,7 @@ class _HomePageState extends State<HomePage> {
     await file.writeAsBytes(response.bodyBytes);
     return filePath;
   }
+
 
   Future<void> _showBigPictureNotification() async {
     final String largeIconPath = await _downloadAndSaveFile(
