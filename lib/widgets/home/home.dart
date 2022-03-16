@@ -14,11 +14,12 @@ import 'package:time_management/widgets/task_data.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-class HomeWidget extends StatefulWidget {
-  const HomeWidget({Key? key}) : super(key: key);
+import '../../main.dart';
 
+class HomeWidget extends StatefulWidget {
+  const HomeWidget({Key? key,}) : super(key: key);
   @override
-  State<HomeWidget> createState() => _HomeWidgetState();
+  _HomeWidgetState createState() => _HomeWidgetState();
 }
 
 class _HomeWidgetState extends State<HomeWidget> {
@@ -95,6 +96,8 @@ class _HomeWidgetState extends State<HomeWidget> {
       sub.cancel();
     });
   }
+
+
 
   @override
   void dispose() {
@@ -198,30 +201,30 @@ class _HomeWidgetState extends State<HomeWidget> {
 
 // hourly notification schedule config, set to either `hours: 1` or `minutes: 60`
 
-  Future<void> _showNotificationHourly() async {
-    tz.initializeTimeZones();
-    var scheduledNotificationDateTime =
-    DateTime.now().add(const Duration(minutes: 60));
-    AndroidNotificationDetails androidPlatformChannelSpecifics =  const AndroidNotificationDetails('your other channel id', 'your other channel name', channelDescription: 'your other channel description',);
-    IOSNotificationDetails iOSPlatformChannelSpecifics =
-    const IOSNotificationDetails();
-    MacOSNotificationDetails macOSPlatformChannelSpecifics =
-    const MacOSNotificationDetails();
-    NotificationDetails platformChannelSpecifics = NotificationDetails(
-    android: androidPlatformChannelSpecifics,
-    iOS: iOSPlatformChannelSpecifics,
-    macOS: macOSPlatformChannelSpecifics);
-
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-    0,
-    'scheduled title',
-    'scheduled body',
-      tz.TZDateTime.from(DateTime.now().add(Duration(hours: 3)), tz.local),
-    platformChannelSpecifics,
-    androidAllowWhileIdle: true,
-    uiLocalNotificationDateInterpretation:
-    UILocalNotificationDateInterpretation.absoluteTime,);
-  }
+  // Future<void> _showNotificationHourly() async {
+  //   tz.initializeTimeZones();
+  //   var scheduledNotificationDateTime =
+  //   DateTime.now().add(const Duration(minutes: 60));
+  //   AndroidNotificationDetails androidPlatformChannelSpecifics =  const AndroidNotificationDetails('your other channel id', 'your other channel name', channelDescription: 'your other channel description',);
+  //   IOSNotificationDetails iOSPlatformChannelSpecifics =
+  //   const IOSNotificationDetails();
+  //   MacOSNotificationDetails macOSPlatformChannelSpecifics =
+  //   const MacOSNotificationDetails();
+  //   NotificationDetails platformChannelSpecifics = NotificationDetails(
+  //   android: androidPlatformChannelSpecifics,
+  //   iOS: iOSPlatformChannelSpecifics,
+  //   macOS: macOSPlatformChannelSpecifics);
+  //
+  //   await flutterLocalNotificationsPlugin.zonedSchedule(
+  //   0,
+  //   'scheduled title',
+  //   'scheduled body',
+  //     tz.TZDateTime.from(DateTime.now().add(Duration(hours: 3)), tz.local),
+  //   platformChannelSpecifics,
+  //   androidAllowWhileIdle: true,
+  //   uiLocalNotificationDateInterpretation:
+  //   UILocalNotificationDateInterpretation.absoluteTime,);
+  // }
 
   Future<void> _zonedScheduleNotification() async {
     const iconData = Icons.comment;
@@ -261,6 +264,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                 when: DateTime.now().millisecondsSinceEpoch + (60 * 2 * 1000) + (5 * 1000)
             )),
         androidAllowWhileIdle: true,
+        payload: "mona fujka",
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime);
   }

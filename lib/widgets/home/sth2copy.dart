@@ -28,9 +28,6 @@ BehaviorSubject<ReceivedNotification>();
 final BehaviorSubject<String?> selectNotificationSubject =
 BehaviorSubject<String?>();
 
-const MethodChannel platform =
-MethodChannel('dexterx.dev/flutter_local_notifications_example');
-
 class ReceivedNotification {
   ReceivedNotification({
     required this.id,
@@ -171,6 +168,8 @@ class _HomePageState extends State<HomePage> {
 
   void _configureSelectNotificationSubject() {
     selectNotificationSubject.stream.listen((String? payload) async {
+      print("qweewq");
+      print(payload);
       await Navigator.pushNamed(context, '/secondPage');
     });
   }
@@ -192,14 +191,14 @@ class _HomePageState extends State<HomePage> {
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Center(child:
-                  PaddedElevatedButton(
-                    buttonText:
-                    'Schedule notification to appear in 5 seconds '
-                        'based on local time zone',
-                    onPressed: () async {
-                      await _zonedScheduleNotification();
-                    },
-                  ),
+          PaddedElevatedButton(
+            buttonText:
+            'Schedule notification to appear in 5 seconds '
+                'based on local time zone',
+            onPressed: () async {
+              await _zonedScheduleNotification();
+            },
+          ),
           ),
         ),
       ),

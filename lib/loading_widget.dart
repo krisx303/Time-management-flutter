@@ -1,17 +1,34 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:time_management/navigator.dart';
 import 'package:time_management/widgets/categories_data.dart';
+import 'package:time_management/widgets/from_notification_task.dart';
+import 'package:time_management/widgets/home/home.dart';
 import 'package:time_management/widgets/task_data.dart';
 
 import 'components/push_notification_service.dart';
 
 class LoadingWidget extends StatefulWidget {
-  const LoadingWidget({Key? key}) : super(key: key);
+  const LoadingWidget(
+      this.payload,
+      this.initialRoute,
+      this.notificationAppLaunchDetails, {
+        Key? key,
+      }) : super(key: key);
+
+  static const String routeName = '/';
+
+  final NotificationAppLaunchDetails? notificationAppLaunchDetails;
+  final String? initialRoute;
+  final String? payload;
+
+  bool get didNotificationLaunchApp =>
+      notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
 
   @override
-  State<LoadingWidget> createState() => _LoadingWidgetState();
+  _LoadingWidgetState createState() => _LoadingWidgetState();
 }
 
 class _LoadingWidgetState extends State<LoadingWidget> {
@@ -39,8 +56,13 @@ class _LoadingWidgetState extends State<LoadingWidget> {
 
   void checkDownloads() {
     if(dTasks && dCategories){
-      Navigator.of(context)
-          .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const MainWidget()), (route) => false);
+      if(widget.initialRoute == FromTaskNotifyWidget.routeName){
+        Navigator.of(context)
+            .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => FromTaskNotifyWidget(widget.payload)), (route) => false);
+      }else{
+        Navigator.of(context)
+            .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainWidget(widget.notificationAppLaunchDetails)), (route) => false);
+      }
     }
   }
 
