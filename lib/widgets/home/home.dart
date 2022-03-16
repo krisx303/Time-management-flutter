@@ -1,20 +1,14 @@
-import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quiver/async.dart';
 import 'package:time_management/widgets/add_category.dart';
-import 'package:time_management/widgets/home/sthhhh4.dart';
 import 'package:time_management/widgets/settings.dart';
 import 'package:time_management/widgets/task_data.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
-import '../../main.dart';
+import '../../components/notification_helper.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({Key? key,}) : super(key: key);
@@ -190,7 +184,6 @@ class _HomeWidgetState extends State<HomeWidget> {
                 ],
               )
           ),
-          TextButton(onPressed: _zonedScheduleNotification, child: Text('asjidbasijd'))
         ],
       ),)
     );
@@ -225,47 +218,4 @@ class _HomeWidgetState extends State<HomeWidget> {
   //   uiLocalNotificationDateInterpretation:
   //   UILocalNotificationDateInterpretation.absoluteTime,);
   // }
-
-  Future<void> _zonedScheduleNotification() async {
-    const iconData = Icons.comment;
-    final pictureRecorder = PictureRecorder();
-    final canvas = Canvas(pictureRecorder);
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
-    final iconStr = String.fromCharCode(iconData.codePoint);
-    textPainter.text = TextSpan(
-        text: iconStr,
-        style: TextStyle(
-          letterSpacing: 0.0,
-          fontSize: 48.0,
-          fontFamily: iconData.fontFamily,
-          color: Colors.red,
-        )
-    );
-    textPainter.layout();
-    textPainter.paint(canvas, const Offset(0.0, 0.0));
-    final picture = pictureRecorder.endRecording();
-    final image = await picture.toImage(48, 48);
-    final bytes = await image.toByteData(format: ImageByteFormat.png);
-    String base64Image = base64Encode(bytes!.buffer.asUint8List().toList(growable: false));
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-        0,
-        'scheduled title',
-        'scheduled body',
-        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
-        NotificationDetails(
-            android: AndroidNotificationDetails(
-                'your channel id', 'your channel name',
-                channelDescription: 'your channel description',
-                ongoing: true,
-                timeoutAfter: 120000,
-                showWhen: true,
-                autoCancel: false,
-                largeIcon: ByteArrayAndroidBitmap.fromBase64String(base64Image),
-                when: DateTime.now().millisecondsSinceEpoch + (60 * 2 * 1000) + (5 * 1000)
-            )),
-        androidAllowWhileIdle: true,
-        payload: "mona fujka",
-        uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime);
-  }
 }

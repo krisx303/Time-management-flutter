@@ -52,6 +52,7 @@ dependencies:
   android_long_task: ^1.0.0
   google_maps_flutter: ^2.1.2
   bitmap: ^0.1.2
+  shared_preferences: ^2.0.13
 
 dev_dependencies:
   flutter_test:

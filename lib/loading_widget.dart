@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:time_management/components/notification_helper.dart';
 import 'package:time_management/navigator.dart';
 import 'package:time_management/widgets/categories_data.dart';
 import 'package:time_management/widgets/from_notification_task.dart';
@@ -34,12 +35,14 @@ class LoadingWidget extends StatefulWidget {
 class _LoadingWidgetState extends State<LoadingWidget> {
   bool dCategories = false;
   bool dTasks = false;
+  bool dExercises = false;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
       await getUserTaskList(onUserTaskDownloaded);
       await getUserCategories(onUserCategoriesDownloaded);
+      await getUserExercisesList(onUserExercisesDownloaded);
       await PushNotificationService().initialise();
     });
   }
@@ -54,8 +57,14 @@ class _LoadingWidgetState extends State<LoadingWidget> {
     checkDownloads();
   }
 
+  void onUserExercisesDownloaded(){
+    dExercises = true;
+    checkDownloads();
+  }
+
   void checkDownloads() {
     if(dTasks && dCategories){
+      create10FutureNotifications();
       if(widget.initialRoute == FromTaskNotifyWidget.routeName){
         Navigator.of(context)
             .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => FromTaskNotifyWidget(widget.payload)), (route) => false);
@@ -92,6 +101,17 @@ class _LoadingWidgetState extends State<LoadingWidget> {
       ),)
     );
   }
+}
+
+Future<void> getUserExercisesList(VoidCallback onDownloaded) async {
+  CollectionReference _collectionRef =
+  FirebaseFirestore.instance.collection('users-data').doc('krisuu').collection('to-do');
+  QuerySnapshot querySnapshot = await _collectionRef.get();
+  for(int i = 0; i<querySnapshot.size; i++){
+    var doc = querySnapshot.docs[i];
+    print(doc.id);
+  }
+  onDownloaded();
 }
 
 
