@@ -78,7 +78,7 @@ class FromTaskNotifyWidgetState extends State<FromTaskNotifyWidget> {
           const Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 60)),
           MaterialButton(
             onPressed: () {
-              zonedScheduleNotification(task, DateTime.now().add(const Duration(hours: 14, minutes: 36)));
+              zonedScheduleNotification(task, DateTime.now().add(const Duration(hours: 1, minutes: 01)));
             },
             color: Colors.white,
             textColor: color,

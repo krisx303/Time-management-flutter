@@ -10,6 +10,7 @@ import 'package:time_management/widgets/home/home.dart';
 import 'package:time_management/widgets/task_data.dart';
 
 import 'components/push_notification_service.dart';
+import 'widgets/exercise_data.dart';
 
 class LoadingWidget extends StatefulWidget {
   const LoadingWidget(
@@ -63,7 +64,7 @@ class _LoadingWidgetState extends State<LoadingWidget> {
   }
 
   void checkDownloads() {
-    if(dTasks && dCategories){
+    if(dTasks && dCategories && dExercises){
       create10FutureNotifications();
       if(widget.initialRoute == FromTaskNotifyWidget.routeName){
         Navigator.of(context)
@@ -107,10 +108,14 @@ Future<void> getUserExercisesList(VoidCallback onDownloaded) async {
   CollectionReference _collectionRef =
   FirebaseFirestore.instance.collection('users-data').doc('krisuu').collection('to-do');
   QuerySnapshot querySnapshot = await _collectionRef.get();
+  List<Exercise> exercises = [];
   for(int i = 0; i<querySnapshot.size; i++){
     var doc = querySnapshot.docs[i];
-    print(doc.id);
+    Timestamp deadline = doc["deadline"];
+    DateTime d = deadline.toDate();
+    exercises.add(Exercise(doc.id, doc["name"], doc["description"], doc["type"], d, doc["priority"]));
   }
+  databaseExercises = exercises;
   onDownloaded();
 }
 

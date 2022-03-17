@@ -66,7 +66,7 @@ Future<void> zonedScheduleNotification(Task task, DateTime when) async {
       notifyId,
       task.name,
       task.description,
-      tz.TZDateTime.from(when.subtract(const Duration(hours: 14, minutes: 35)), tz.local),
+      tz.TZDateTime.from(when.subtract(const Duration(hours: 1, minutes: 0)), tz.local),
       NotificationDetails(
           android: AndroidNotificationDetails(
               'task_channel', 'Time Management Task',
@@ -74,6 +74,7 @@ Future<void> zonedScheduleNotification(Task task, DateTime when) async {
               ongoing: true,
               timeoutAfter: 60 * 60 * 1000,
               showWhen: true,
+              icon: "ic_launcher",
               autoCancel: false,
               largeIcon: ByteArrayAndroidBitmap.fromBase64String(base64Image),
               when: when.millisecondsSinceEpoch

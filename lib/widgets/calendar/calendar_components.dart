@@ -36,6 +36,18 @@ Padding enterTaskNameWidget(Function(String newValue) onChanged){
   ),);
 }
 
+Padding enterTaskPriorityWidget(Function(String newValue) onChanged){
+  return Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 10), child: TextField(
+    onChanged: onChanged,
+    keyboardType: TextInputType.number,
+    decoration: const InputDecoration(
+      border: OutlineInputBorder(),
+      labelText: 'Task Priority',
+      hintText: 'Enter Task Priority',
+    ),
+  ),);
+}
+
 Padding enterTaskDescriptionWidget(Function(String newValue) onChanged){
   return Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 0), child: TextField(
     onChanged: onChanged,
@@ -113,6 +125,41 @@ class DateTextContainer extends Container{
         )
     ),
   );
+}
+
+class DateTimeTextContainer extends Container{
+  DateTimeTextContainer(DateTime deadline, Color colorFrom, Color colorTo, {Key? key}) : super(key: key,
+    margin: const EdgeInsets.symmetric(
+        vertical: 40
+    ),
+    child: RichText(
+        text: TextSpan(
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.normal,
+              color: Colors.black,
+            ),
+            children: <TextSpan>[
+              const TextSpan(text: "Date: "),
+              TextSpan(text: getTextDate(deadline), style: TextStyle(color: colorFrom, fontWeight: FontWeight.bold, fontSize: 20)),
+              const TextSpan(text: " Time: "),
+              TextSpan(text: getTextTime(deadline), style: TextStyle(color: colorTo, fontWeight: FontWeight.bold, fontSize: 20))
+            ]
+        )
+    ),
+  );
+}
+
+String getTextDate(DateTime time){
+  return time.day.toString().padLeft(2, '0') + '/' +
+      time.month.toString().padLeft(2, '0') + '/' +
+      time.year.toString();
+}
+
+String getTextTime(DateTime time){
+  return time.hour.toString().padLeft(2, '0') + ':' +
+      time.minute.toString().padLeft(2, '0') + ':' +
+      time.second.toString().padLeft(2, '0');
 }
 
 List<String> databaseRepeatingOptions = <String>["every_week", "every_day", "every_month_that_day", "every_second_day"];

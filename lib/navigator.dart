@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:time_management/components/navigator_components.dart';
 import 'package:time_management/widgets/calendar/calendar.dart';
+import 'package:time_management/widgets/exercise/exercises.dart';
 import 'package:time_management/widgets/from_notification_task.dart';
 import 'package:time_management/widgets/home/home.dart';
 import 'package:time_management/widgets/home/sth.dart';
@@ -27,7 +28,7 @@ class MainWidget extends StatefulWidget {
 class _MainWidgetState extends State<MainWidget> {
   int _selectedIndex = 1;
   static final List<Widget> _widgetOptions = <Widget>[
-    const HomeWidget(),
+    const ExercisesWidget(),
     const HomeWidget(),
     const CalendarWidget(),
   ];
