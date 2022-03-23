@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:time_management/components/app_settings.dart';
 import 'package:time_management/widgets/task_data.dart';
 import '../../loading_widget.dart';
 import '../categories_data.dart';
@@ -22,6 +24,7 @@ class _AddCalendarTaskWidgetState extends State<AddCalendarTaskWidget> {
   String name = "";
   String description = "";
   bool? refreshing = false;
+  bool? obligatory = false;
   String repeating = databaseRepeatingOptions[0];
 
   @override
@@ -74,6 +77,12 @@ class _AddCalendarTaskWidgetState extends State<AddCalendarTaskWidget> {
     });
   }
 
+  void onObligatoryChanged(bool? newValue){
+    setState(() {
+      obligatory = newValue;
+    });
+  }
+
   void onDescriptionChanged(String newValue){
     setState(() {
       description = newValue;
@@ -121,13 +130,15 @@ class _AddCalendarTaskWidgetState extends State<AddCalendarTaskWidget> {
       'from': Timestamp.fromDate(dateFrom),
       'to': Timestamp.fromDate(dateTo),
       'repeating': repeating,
-      'refreshing': repeating != "",
+      'obligatory': obligatory,
+      'refreshing': refreshing,
     }).then((value) => getUserTaskList(onSentAndUpdated))
-        .catchError((error) => print("Failed to add user: $error"));
+        .catchError((error) => showToast(error));
   }
 
   void onSentAndUpdated(){
     setState(() {});
+    showToast("Task sent successfully :)");
     Navigator.of(context).pop();
   }
 
@@ -135,6 +146,7 @@ class _AddCalendarTaskWidgetState extends State<AddCalendarTaskWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: mainAppColor,
         title: const Text("Add new Task"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -152,6 +164,10 @@ class _AddCalendarTaskWidgetState extends State<AddCalendarTaskWidget> {
             enterTaskNameWidget(onNameChanged),
             enterTaskDescriptionWidget(onDescriptionChanged),
             categoryPicker(_categoryChoose, _onDropDownItemSelected),
+            Row(mainAxisAlignment: MainAxisAlignment.center ,children: [
+              const Text("Task is obligatory?"),
+              Checkbox(value:obligatory, onChanged: onObligatoryChanged ),
+            ],),
             Row(mainAxisAlignment: MainAxisAlignment.center ,children: [
               const Text("Task is repeating?"),
               Checkbox(value:refreshing, onChanged: onRefreshingChanged ),

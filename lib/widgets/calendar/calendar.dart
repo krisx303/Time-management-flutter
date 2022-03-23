@@ -16,6 +16,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   CalendarController controller = CalendarController();
   bool isEventSelected = false;
   Task? selectedTask;
+  bool isObligatoryOnly = false;
 
   void onCalendarTap(CalendarTapDetails calendarTapDetails){
     setState(() {
@@ -56,6 +57,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     }
   }
 
+  void onObligatoryChanged(bool? newvalue){
+    setState(() {
+      isObligatoryOnly = newvalue == true;
+    });
+  }
+
   void editEvent(){
     print("Edit event:");
     print(selectedTask?.name);
@@ -67,7 +74,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       floatingActionButton: isEventSelected ? floatingEditEventButton(editEvent): floatingAddEventButton(addEvent),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       body: Padding(padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-        child: SfCalendar(onLongPress: longPressed,view: CalendarView.workWeek, dataSource: TaskDataSource(_getDataSource()), controller: controller, onTap: onCalendarTap,allowedViews: const <CalendarView>[
+        child: SfCalendar(onObligatoryChanged, firstDayOfWeek: 1, onLongPress: longPressed,view: CalendarView.week, dataSource: TaskDataSource(_getDataSource()), controller: controller, onTap: onCalendarTap,allowedViews: const <CalendarView>[
           CalendarView.day,
           CalendarView.week,
           CalendarView.workWeek,
@@ -82,6 +89,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   }
 
   List<Task> _getDataSource() {
-    return databaseTasks;
+    if(isObligatoryOnly){
+      return databaseTasks.where((element) => element.obligatory).toList();
+    }else{
+      return databaseTasks;
+    }
   }
 }

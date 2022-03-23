@@ -2,7 +2,7 @@ import 'package:android_long_task/android_long_task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'app_service_config.dart';
+import '../widgets/home/app_service_config.dart';
 
 AppServiceData data = AppServiceData();
 

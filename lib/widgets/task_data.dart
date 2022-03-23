@@ -38,7 +38,7 @@ class TaskDataSource extends CalendarDataSource {
 }
 
 class Task {
-  Task(this.id, this.name, this.description, this.type, this.from, this.to, this.repeating);
+  Task(this.id, this.name, this.description, this.type, this.from, this.to, this.repeating, this.obligatory);
   String id;
   String name;
   String description;
@@ -46,6 +46,7 @@ class Task {
   DateTime from;
   DateTime to;
   String repeating;
+  bool obligatory;
 
   Map<String, Object?> toJson() {
     return {
@@ -55,6 +56,7 @@ class Task {
       'from': Timestamp.fromDate(from),
       'to': Timestamp.fromDate(to),
       'repeating': repeating,
+      'obligatory': obligatory,
       'refreshing': repeating != "",
     };
   }

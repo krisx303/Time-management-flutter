@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:time_management/widgets/calendar/time_picker.dart';
 
 import '../categories_data.dart';
@@ -61,7 +62,14 @@ Padding enterTaskDescriptionWidget(Function(String newValue) onChanged){
   ),);
 }
 
-
+void showToast(String text) {
+  Fluttertoast.showToast(
+      msg: text,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+  );
+}
 
 Future<void> showWarningOnAddTask(BuildContext context) async {
   return showDialog<void>(

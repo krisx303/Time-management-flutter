@@ -74,7 +74,7 @@ Future<void> zonedScheduleNotification(Task task, DateTime when) async {
               ongoing: true,
               timeoutAfter: 60 * 60 * 1000,
               showWhen: true,
-              icon: "ic_launcher",
+              //icon: "ic_launcher",
               autoCancel: false,
               largeIcon: ByteArrayAndroidBitmap.fromBase64String(base64Image),
               when: when.millisecondsSinceEpoch

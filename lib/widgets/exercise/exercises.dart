@@ -1,15 +1,15 @@
 import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:getwidget/getwidget.dart';
 import 'package:quiver/async.dart';
+import 'package:time_management/components/app_settings.dart';
 import 'package:time_management/widgets/add_category.dart';
 import 'package:time_management/widgets/exercise/add_exercise.dart';
 import 'package:time_management/widgets/exercise/triangle.dart';
 import 'package:time_management/widgets/exercise_data.dart';
-import 'package:time_management/widgets/settings.dart';
 import 'package:time_management/widgets/task_data.dart';
+
+import '../../navigator.dart';
 
 
 class ExercisesWidget extends StatefulWidget {
@@ -72,7 +72,9 @@ class _ExercisesWidgetState extends State<ExercisesWidget> {
     sub.onDone(() {
       exercises = exercises.where((element) => element.deadline.isAfter(DateTime.now())).toList();
       sub.cancel();
-      startTimer();
+      if(MainWidgetState.selectedIndex == 1) {
+        startTimer();
+      }
     });
   }
 
@@ -139,7 +141,7 @@ class _ExercisesWidgetState extends State<ExercisesWidget> {
     }
   }
 
-  Widget _offsetPopup() => Padding(padding: EdgeInsets.all(15),
+  Widget _offsetPopup() => Padding(padding: const EdgeInsets.all(15),
     child: Align(alignment: const Alignment(1, 0),child: PopupMenuButton<int>(
       onSelected: onItemSelected,
       tooltip: "Change type",
@@ -181,13 +183,69 @@ class _ExercisesWidgetState extends State<ExercisesWidget> {
         //child: Icon(Icons.menu, color: Colors.white), <-- You can give your icon here
       )
   ),),);
+  Widget slideRightBackground() {
+    return Container(
+      color: Colors.green,
+      child: Align(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: const <Widget>[
+            SizedBox(
+              width: 20,
+            ),
+            Icon(
+              Icons.done,
+              color: Colors.white,
+            ),
+            Text(
+              " Done",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+              textAlign: TextAlign.left,
+            ),
+          ],
+        ),
+        alignment: Alignment.centerLeft,
+      ),
+    );
+  }
 
+  Widget slideLeftBackground() {
+    return Container(
+      color: Colors.red,
+      child: Align(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: const <Widget>[
+            Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+            Text(
+              " Delete",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+              textAlign: TextAlign.right,
+            ),
+            SizedBox(
+              width: 20,
+            ),
+          ],
+        ),
+        alignment: Alignment.centerRight,
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text("Exercises - " + typeString),
-
+          backgroundColor: mainAppColor,
           actions: <Widget>[
             PopupMenuButton<String>(
               onSelected: (e) => handleClickOption(e),
@@ -208,7 +266,49 @@ class _ExercisesWidgetState extends State<ExercisesWidget> {
             padding: const EdgeInsets.all(8),
             itemCount: exercises.length,
             itemBuilder: (BuildContext context, int index) {
-              return Card(
+              return Dismissible(
+                  background: slideRightBackground(),
+                  secondaryBackground: slideLeftBackground(),
+                  confirmDismiss: (direction) async {
+                    if (direction == DismissDirection.endToStart) {
+                      final bool? res = await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Text(
+                                  "Are you sure you want to delete ${exercises[index].name}?"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: const Text(
+                                    "Cancel",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                FlatButton(
+                                  child: const Text(
+                                    "Delete",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                  onPressed: () {
+                                    // TODO: Delete the item from DB etc..
+                                    setState(() {
+                                      exercises.removeAt(index);
+                                    });
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          });
+                      return res == true;
+                    } else {
+                      // TODO: Navigate to edit page;
+                    }
+                  },
+                  key: Key(exercises[index].name), child: Card(
                   elevation: 5,
                   margin: const EdgeInsets.fromLTRB(12, 10, 12, 10),
                   child: Column(
@@ -248,7 +348,7 @@ class _ExercisesWidgetState extends State<ExercisesWidget> {
                       ],)
                     ],
                   )
-              );
+              ));
             }
         ),),
       _offsetPopup(),

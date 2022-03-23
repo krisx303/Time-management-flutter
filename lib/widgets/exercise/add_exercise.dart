@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/button/gf_button.dart';
+import 'package:time_management/components/app_settings.dart';
 import '../../loading_widget.dart';
 import '../calendar/calendar_components.dart';
 import '../categories_data.dart';
@@ -149,6 +150,7 @@ class _AddExerciseTaskWidgetState extends State<AddExerciseTaskWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: mainAppColor,
         title: const Text("Add new Task"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),

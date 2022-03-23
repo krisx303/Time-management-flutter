@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:getwidget/components/toggle/gf_toggle.dart';
 import 'package:quiver/async.dart';
+import 'package:time_management/components/app_settings.dart';
 import 'package:time_management/widgets/add_category.dart';
 import 'package:time_management/widgets/settings.dart';
 import 'package:time_management/widgets/task_data.dart';
@@ -98,7 +100,6 @@ class _HomeWidgetState extends State<HomeWidget> {
     // TODO: implement dispose
     super.dispose();
     countDownTimer!.cancel();
-
   }
 
   @override
@@ -106,7 +107,9 @@ class _HomeWidgetState extends State<HomeWidget> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Welcome back krisuu'),
+          backgroundColor: mainAppColor,
           actions: <Widget>[
+            Center(child: GFToggle(onChanged: (b) => {}, value: false),),
             PopupMenuButton<String>(
               onSelected: (e) => handleClickOption(e),
               itemBuilder: (BuildContext context) {

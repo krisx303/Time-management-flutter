@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:time_management/components/app_settings.dart';
 import 'package:time_management/components/navigator_components.dart';
 import 'package:time_management/widgets/calendar/calendar.dart';
+import 'package:time_management/widgets/checkboxes/checkboxes.dart';
 import 'package:time_management/widgets/exercise/exercises.dart';
 import 'package:time_management/widgets/from_notification_task.dart';
 import 'package:time_management/widgets/home/home.dart';
-import 'package:time_management/widgets/home/sth.dart';
+import 'package:time_management/widgets/home/home_widget.dart';
 
 import 'main.dart';
 
@@ -22,14 +24,15 @@ class MainWidget extends StatefulWidget {
       notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
 
   @override
-  _MainWidgetState createState() => _MainWidgetState();
+  MainWidgetState createState() => MainWidgetState();
 }
 
-class _MainWidgetState extends State<MainWidget> {
-  int _selectedIndex = 1;
+class MainWidgetState extends State<MainWidget> {
+  static int selectedIndex = 1;
   static final List<Widget> _widgetOptions = <Widget>[
+    const CheckboxesWidget(),
     const ExercisesWidget(),
-    const HomeWidget(),
+    const NewHomeWidget(),
     const CalendarWidget(),
   ];
 
@@ -49,7 +52,7 @@ class _MainWidgetState extends State<MainWidget> {
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      selectedIndex = index;
     });
   }
 
@@ -57,19 +60,20 @@ class _MainWidgetState extends State<MainWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: _widgetOptions.elementAt(selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: true,
         items: const <BottomNavigationBarItem>[
+          BottomNavigationItem.tasks(),
           BottomNavigationItem.tasks(),
           BottomNavigationItem.home(),
           BottomNavigationItem.calendar(),
           //BottomNavigationItem.chart(),
           //BottomNavigationItem.data(),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue[400],
+        currentIndex: selectedIndex,
+        selectedItemColor: mainAppColor,
         unselectedItemColor: Colors.black,
         onTap: _onItemTapped,
       ),
