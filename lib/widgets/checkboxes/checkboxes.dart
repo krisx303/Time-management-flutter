@@ -1,20 +1,15 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:getwidget/colors/gf_color.dart';
-import 'package:getwidget/components/button/gf_button.dart';
 import 'package:getwidget/components/checkbox/gf_checkbox.dart';
 import 'package:getwidget/size/gf_size.dart';
-import 'package:quiver/async.dart';
 import 'package:time_management/components/app_settings.dart';
-import 'package:time_management/widgets/add_category.dart';
+import 'package:time_management/widgets/calendar/calendar_components.dart';
 import 'package:time_management/widgets/checkboxes/checkbox_data.dart';
-import 'package:time_management/widgets/exercise/add_exercise.dart';
 import 'package:time_management/widgets/exercise/triangle.dart';
-import 'package:time_management/widgets/exercise_data.dart';
 import 'package:time_management/widgets/task_data.dart';
-
-import '../../navigator.dart';
 
 
 class CheckboxesWidget extends StatefulWidget {
@@ -24,7 +19,6 @@ class CheckboxesWidget extends StatefulWidget {
 }
 
 class _CheckboxesWidgetState extends State<CheckboxesWidget> {
-  List<String> types = ["", "Sorted by deadline", "Sorted by priority", "Sorted by type"];
   List<CheckboxData> checkboxes = databaseCheckboxes;
   CheckboxData parent = databaseCheckboxes[0];
   List<CheckboxDataChild> parentTree = [];
@@ -70,12 +64,104 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
     });
   }
 
+  void onWantDeleteObject(int index) async {
+    await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+      title: const Text('Are you sure?'),
+      content: const Text('Do you want to delete this object and all children??'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => {Navigator.of(context).pop()},
+          child: const Text('Noooo'),
+        ),
+        TextButton(
+          onPressed: () {
+            setState(() {
+              if(parentTreeIndex == -1){
+                parent.subtasks.removeWhere((key, value) => value == children[index]);
+                names = [];
+                children = [];
+                parent.subtasks.forEach((key, value) {
+                  names.add(key);
+                  children.add(value);
+                });
+              }else{
+                parentTree[parentTreeIndex].subtasks.removeWhere((key, value) => value == children[index]);
+                names = [];
+                children = [];
+                parentTree[parentTreeIndex].subtasks.forEach((key, value) {
+                  names.add(key);
+                  children.add(value);
+                });
+              }
+            });
+            Navigator.of(context).pop();
+          },
+          child: const Text('Yes'),
+        ),
+      ],
+    ),
+    );
+  }
+
   void addNewCategory(){
 
   }
 
-  void addNewChild(){
+  void addNewChild() async {
+    TextEditingController _textFieldController = TextEditingController();
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Adding new category.'),
+            content: TextField(
+              controller: _textFieldController,
+              textInputAction: TextInputAction.go,
+              decoration: const InputDecoration(hintText: "Enter name for category:"),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: const Text('Add'),
+                onPressed: () {
+                  setState(() {
+                    if(parentTreeIndex == -1){
+                      parent.subtasks.putIfAbsent(_textFieldController.text, () => CheckboxDataChild(false, {}, parent.subtasks.length));
+                      names = [];
+                      children = [];
+                      parent.subtasks.forEach((key, value) {
+                        names.add(key);
+                        children.add(value);
+                      });
+                    }else{
+                      parentTree[parentTreeIndex].subtasks.putIfAbsent(_textFieldController.text, () => CheckboxDataChild(false, {}, parentTree[parentTreeIndex].subtasks.length));
+                      names = [];
+                      children = [];
+                      parentTree[parentTreeIndex].subtasks.forEach((key, value) {
+                        names.add(key);
+                        children.add(value);
+                      });
+                    }
+                  });
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
+  }
 
+  void addNewChildFactory() async {
+
+  }
+
+  void saveOnFirestore() async {
+    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc('krisuu').collection('checkboxes');
+    for (var element in checkboxes) {
+      ref.doc(element.id).update(element.toJson());
+    }
+    showToast("Data updated successfully :)");
   }
 
   Widget buildFirstView(BuildContext context){
@@ -85,20 +171,30 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
         backgroundColor: mainAppColor,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: Padding(padding: const EdgeInsets.fromLTRB(0, 0, 15, 15), child: FloatingActionButton(
-        onPressed: addNewCategory,
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add),
-      ),),
+      floatingActionButton: Padding(padding: const EdgeInsets.fromLTRB(35, 0, 5, 15), child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          FloatingActionButton(
+            onPressed: saveOnFirestore,
+            backgroundColor: Colors.blue,
+            child: const Icon(Icons.save),
+          ),
+          FloatingActionButton(
+            onPressed: addNewCategory,
+            backgroundColor: Colors.green,
+            child: const Icon(Icons.add),
+          ),],
+      )),
       body: Column(children: [
         Flexible(child:
-        ListView.builder(
+        ReorderableListView.builder(
             padding: const EdgeInsets.all(8),
             itemCount: checkboxes.length,
             itemBuilder: (BuildContext context, int index) {
               List<int> stats = getTaskSize(checkboxes[index].subtasks);
               String statsStr = "Tasks ${stats[0]}/${stats[1]}";
               return GestureDetector(
+                key: Key('$index'),
                 onTap: () => onFirstItemClick(index),
                 child: Card(
                     elevation: 5,
@@ -141,11 +237,31 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
                     )
                 ),
               );
-            }
+            }, onReorder: (int oldIndex, int newIndex) {  },
         ),
         ),
       ],
       ),
+    );
+  }
+
+  _showPopupMenu(Offset offset) async {
+    double left = offset.dx;
+    double top = offset.dy;
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(left, top, 0, 0),
+      items: [
+        const PopupMenuItem(
+          value: 1,
+          child: Text(
+            "Sort by deadline",
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.w500),
+          ),
+        ),
+      ],
+      elevation: 8.0,
     );
   }
 
@@ -193,7 +309,11 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
   }
 
   Widget buildCheckboxCard(BuildContext context, int index){
-    return Card(
+    bool isCheckable = children[index].subtasks.isEmpty;
+    return GestureDetector(
+        onTap: () => {if(isCheckable){}else{onNextItemClick(index)}},
+        onDoubleTap: () => {if(isCheckable){onNextItemClick(index)}else{}},
+    child: Card(
           elevation: 5,
           margin: const EdgeInsets.fromLTRB(12, 6, 12, 6),
           child: Column(
@@ -229,7 +349,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
                 ],)
             ],
           )
-      );
+      ));
   }
 
   Widget buildChildView(BuildContext context){
@@ -239,11 +359,20 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
         backgroundColor: getColorByType(parent.type),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: Padding(padding: const EdgeInsets.fromLTRB(0, 0, 15, 15), child: FloatingActionButton(
-        onPressed: addNewChild,
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add),
-      ),),
+      floatingActionButton: Padding(padding: const EdgeInsets.fromLTRB(35, 0, 5, 15), child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          FloatingActionButton(
+            onPressed: addNewChildFactory,
+            backgroundColor: Colors.blue,
+            child: const Icon(Icons.all_inclusive),
+          ),
+          FloatingActionButton(
+            onPressed: addNewChild,
+            backgroundColor: Colors.green,
+            child: const Icon(Icons.add),
+          ),],
+      )),
       body: Column(children: [
         Flexible(child:
         ListView.builder(
@@ -283,6 +412,8 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
   }
 
   Future<bool> onWillPopNextView() async {
+    print(parentTreeIndex);
+    print(parentTree.length);
     if(parentTreeIndex == -1){
       setState(() {
         names = [];
@@ -305,7 +436,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
       setState(() {
         names = [];
         children = [];
-        parentTree[parentTreeIndex].subtasks.forEach((key, value) {
+        parentTree[parentTreeIndex-1].subtasks.forEach((key, value) {
           names.add(key);
           children.add(value);
         });
