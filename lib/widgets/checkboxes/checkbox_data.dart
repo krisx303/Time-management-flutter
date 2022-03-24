@@ -1,23 +1,28 @@
 import 'dart:convert';
 
-class CheckboxData {
-  CheckboxData(this.id, this.name, this.type, this.subtasks, this.index);
-  String id;
+
+class CheckboxDataAbstract{
+  CheckboxDataAbstract(this.name, this.subtasks, this.index);
   String name;
-  String type;
   int index;
-  Map<String, CheckboxDataChild> subtasks;
+  List<CheckboxDataChild> subtasks;
+}
+
+class CheckboxData extends CheckboxDataAbstract {
+  CheckboxData(this.id, String name, this.type, List<CheckboxDataChild> subtasks, int index) : super(name, subtasks, index);
+  String id;
+  String type;
 
   factory CheckboxData.fromJson(String id, dynamic json) {
-    Map<String, CheckboxDataChild> subtasks = getTasks(json['subtasks']);
+    List<CheckboxDataChild> subtasks = getTasks(json['subtasks']);
     return CheckboxData(id, json['name'] as String, json['type'] as String, subtasks, json['index']);
   }
 
   Map<String, Object?> toJson() {
     Map<String, Object?> asd = {};
-    subtasks.forEach((key, value) {
-      asd.putIfAbsent(key, () => value.toJson());
-    });
+    for(CheckboxDataChild element in subtasks){
+      asd.putIfAbsent(element.name, () => element.toJson());
+    }
     return {
       'name': name,
       'type': type,
@@ -27,17 +32,15 @@ class CheckboxData {
   }
 }
 
-class CheckboxDataChild {
-  CheckboxDataChild(this.checked, this.subtasks, this.index);
+class CheckboxDataChild extends CheckboxDataAbstract{
+  CheckboxDataChild(String name, this.checked, List<CheckboxDataChild> subtasks, int index) : super(name, subtasks, index);
   bool checked;
-  int index;
-  Map<String, CheckboxDataChild> subtasks;
 
   Map<String, Object?> toJson() {
     Map<String, Object?> asd = {};
-    subtasks.forEach((key, value) {
-      asd.putIfAbsent(key, () => value.toJson());
-    });
+    for(var element in subtasks) {
+      asd.putIfAbsent(element.name, () => element.toJson());
+    }
     return {
       'checked': checked,
       'subtasks': asd,
@@ -51,18 +54,18 @@ class CheckboxDataChild {
   }
 }
 
-Map<String, CheckboxDataChild> getTasks(Map<String, dynamic> data){
-  Map<String, CheckboxDataChild> tasks = {};
+List<CheckboxDataChild> getTasks(Map<String, dynamic> data){
+  List<CheckboxDataChild> tasks = [];
   data.forEach((key, value) {
-    tasks.putIfAbsent(key, () => CheckboxDataChild(false, getSubtasks(value['subtasks']), value['index']));
+    tasks.add(CheckboxDataChild(key, false, getSubtasks(value['subtasks']), value['index']));
   });
   return tasks;
 }
 
-Map<String, CheckboxDataChild> getSubtasks(Map<String, dynamic> data) {
-  Map<String, CheckboxDataChild> subtasks = {};
+List<CheckboxDataChild> getSubtasks(Map<String, dynamic> data) {
+  List<CheckboxDataChild> subtasks = [];
   data.forEach((key, value) {
-    subtasks.putIfAbsent(key, () => CheckboxDataChild(false, getSubtasks(value['subtasks']), value['index']));
+    subtasks.add(CheckboxDataChild(key, false, getSubtasks(value['subtasks']), value['index']));
   });
   return subtasks;
 }

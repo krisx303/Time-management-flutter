@@ -24,7 +24,6 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
   CheckboxData parent = databaseCheckboxes[0];
   List<CheckboxDataChild> parentTree = [];
   int parentTreeIndex = -1;
-  List<String> names = [];
   List<CheckboxDataChild> children = [];
   bool isFirstView = true;
 
@@ -82,70 +81,60 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
   void onFirstItemClick(int index){
     setState(() {
       parent = checkboxes[index];
-      names = [];
       children = [];
-      parent.subtasks.forEach((key, value) {
-        names.add(key);
-        children.add(value);
-      });
+      children = parent.subtasks;
       isFirstView = false;
     });
   }
 
   void onNextItemClick(int index){
     setState(() {
-      names = [];
       parentTree.add(children[index]);
       parentTreeIndex++;
-      children = [];
-      parentTree[parentTreeIndex].subtasks.forEach((key, value) {
-        names.add(key);
-        children.add(value);
-      });
+      children = parentTree[parentTreeIndex].subtasks;
       isFirstView = false;
     });
   }
 
-  void onWantDeleteObject(int index) async {
-    await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-      title: const Text('Are you sure?'),
-      content: const Text('Do you want to delete this object and all children??'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => {Navigator.of(context).pop()},
-          child: const Text('Noooo'),
-        ),
-        TextButton(
-          onPressed: () {
-            setState(() {
-              if(parentTreeIndex == -1){
-                parent.subtasks.removeWhere((key, value) => value == children[index]);
-                names = [];
-                children = [];
-                parent.subtasks.forEach((key, value) {
-                  names.add(key);
-                  children.add(value);
-                });
-              }else{
-                parentTree[parentTreeIndex].subtasks.removeWhere((key, value) => value == children[index]);
-                names = [];
-                children = [];
-                parentTree[parentTreeIndex].subtasks.forEach((key, value) {
-                  names.add(key);
-                  children.add(value);
-                });
-              }
-            });
-            Navigator.of(context).pop();
-          },
-          child: const Text('Yes'),
-        ),
-      ],
-    ),
-    );
-  }
+  // void onWantDeleteObject(int index) async {
+  //   await showDialog(
+  //       context: context,
+  //       builder: (context) => AlertDialog(
+  //     title: const Text('Are you sure?'),
+  //     content: const Text('Do you want to delete this object and all children??'),
+  //     actions: <Widget>[
+  //       TextButton(
+  //         onPressed: () => {Navigator.of(context).pop()},
+  //         child: const Text('Noooo'),
+  //       ),
+  //       TextButton(
+  //         onPressed: () {
+  //           setState(() {
+  //             if(parentTreeIndex == -1){
+  //               parent.subtasks.removeWhere((key, value) => value == children[index]);
+  //               children = [];
+  //               parent.subtasks.forEach((key, value) {
+  //                 names.add(key);
+  //                 children.add(value);
+  //               });
+  //             }else{
+  //               parentTree[parentTreeIndex].subtasks.removeWhere((key, value) => value == children[index]);
+  //               names = [];
+  //               children = [];
+  //               parentTree[parentTreeIndex].subtasks.forEach((key, value) {
+  //                 names.add(key);
+  //                 children.add(value);
+  //               });
+  //             }
+  //           });
+  //           Navigator.of(context).pop();
+  //         },
+  //         child: const Text('Yes'),
+  //       ),
+  //     ],
+  //   ),
+  //   );
+  // }
 
   void addNewCategory(){
 
@@ -169,21 +158,11 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
                 onPressed: () {
                   setState(() {
                     if(parentTreeIndex == -1){
-                      parent.subtasks.putIfAbsent(_textFieldController.text, () => CheckboxDataChild(false, {}, parent.subtasks.length));
-                      names = [];
-                      children = [];
-                      parent.subtasks.forEach((key, value) {
-                        names.add(key);
-                        children.add(value);
-                      });
+                      parent.subtasks.add(CheckboxDataChild(_textFieldController.text, false, [], parent.subtasks.length));
+                      children = parent.subtasks;
                     }else{
-                      parentTree[parentTreeIndex].subtasks.putIfAbsent(_textFieldController.text, () => CheckboxDataChild(false, {}, parentTree[parentTreeIndex].subtasks.length));
-                      names = [];
-                      children = [];
-                      parentTree[parentTreeIndex].subtasks.forEach((key, value) {
-                        names.add(key);
-                        children.add(value);
-                      });
+                      parentTree[parentTreeIndex].subtasks.add(CheckboxDataChild(_textFieldController.text, false, [], parentTree[parentTreeIndex].subtasks.length));
+                      children = parentTree[parentTreeIndex].subtasks;
                     }
                   });
                   Navigator.of(context).pop();
@@ -327,7 +306,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(names[index], style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 18)),
+                          Text(children[index].name, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 18)),
                           Text(statsStr, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 20), textAlign: TextAlign.end,),
                         ],
                       )
@@ -368,7 +347,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(names[index], style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 18)),
+                      Text(children[index].name, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 18)),
                     ],
                   ),),
                   Row(children: [
@@ -460,30 +439,19 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
     print(parentTree.length);
     if(parentTreeIndex == -1){
       setState(() {
-        names = [];
         children = [];
         isFirstView = true;
       });
     }else if(parentTreeIndex == 0) {
       setState(() {
-        names = [];
-        children = [];
-        parent.subtasks.forEach((key, value) {
-          names.add(key);
-          children.add(value);
-        });
+        children = parent.subtasks;
         parentTree.removeLast();
         parentTreeIndex--;
         isFirstView = false;
       });
     }else{
       setState(() {
-        names = [];
-        children = [];
-        parentTree[parentTreeIndex-1].subtasks.forEach((key, value) {
-          names.add(key);
-          children.add(value);
-        });
+        children = parentTree[parentTreeIndex].subtasks;
         parentTree.removeLast();
         parentTreeIndex--;
         isFirstView = false;
@@ -503,19 +471,19 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
   }
 }
 
-List<int> getTaskSize(Map<String, CheckboxDataChild> data){
+List<int> getTaskSize(List<CheckboxDataChild> data){
   int count = 0, all = 0;
-  data.forEach((key, value) {
-    if(value.subtasks.isEmpty){
+  for(CheckboxDataChild child in data){
+    if(child.subtasks.isEmpty){
       all += 1;
-      if(value.checked){
+      if(child.checked){
         count += 1;
       }
     }else{
-      List<int> stats = getTaskSize(value.subtasks);
+      List<int> stats = getTaskSize(child.subtasks);
       count += stats[0];
       all += stats[1];
     }
-  });
+  }
   return [count, all];
 }
