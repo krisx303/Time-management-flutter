@@ -1,15 +1,16 @@
 import 'dart:convert';
 
 class CheckboxData {
-  CheckboxData(this.id, this.name, this.type, this.subtasks);
+  CheckboxData(this.id, this.name, this.type, this.subtasks, this.index);
   String id;
   String name;
   String type;
+  int index;
   Map<String, CheckboxDataChild> subtasks;
 
   factory CheckboxData.fromJson(String id, dynamic json) {
     Map<String, CheckboxDataChild> subtasks = getTasks(json['subtasks']);
-    return CheckboxData(id, json['name'] as String, json['type'] as String, subtasks);
+    return CheckboxData(id, json['name'] as String, json['type'] as String, subtasks, json['index']);
   }
 
   Map<String, Object?> toJson() {
@@ -20,15 +21,16 @@ class CheckboxData {
     return {
       'name': name,
       'type': type,
-      'subtasks': asd
+      'subtasks': asd,
+      'index': index
     };
   }
 }
 
 class CheckboxDataChild {
-  CheckboxDataChild(this.checked, this.subtasks, this.id);
+  CheckboxDataChild(this.checked, this.subtasks, this.index);
   bool checked;
-  int id;
+  int index;
   Map<String, CheckboxDataChild> subtasks;
 
   Map<String, Object?> toJson() {
@@ -39,7 +41,7 @@ class CheckboxDataChild {
     return {
       'checked': checked,
       'subtasks': asd,
-      'id': id,
+      'index': index,
     };
   }
 
@@ -52,7 +54,7 @@ class CheckboxDataChild {
 Map<String, CheckboxDataChild> getTasks(Map<String, dynamic> data){
   Map<String, CheckboxDataChild> tasks = {};
   data.forEach((key, value) {
-    tasks.putIfAbsent(key, () => CheckboxDataChild(false, getSubtasks(value['subtasks']), value['id']));
+    tasks.putIfAbsent(key, () => CheckboxDataChild(false, getSubtasks(value['subtasks']), value['index']));
   });
   return tasks;
 }
@@ -60,7 +62,7 @@ Map<String, CheckboxDataChild> getTasks(Map<String, dynamic> data){
 Map<String, CheckboxDataChild> getSubtasks(Map<String, dynamic> data) {
   Map<String, CheckboxDataChild> subtasks = {};
   data.forEach((key, value) {
-    subtasks.putIfAbsent(key, () => CheckboxDataChild(false, getSubtasks(value['subtasks']), value['id']));
+    subtasks.putIfAbsent(key, () => CheckboxDataChild(false, getSubtasks(value['subtasks']), value['index']));
   });
   return subtasks;
 }

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,6 +27,47 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
   List<String> names = [];
   List<CheckboxDataChild> children = [];
   bool isFirstView = true;
+
+  void onReorderFirstView(int oldIndex, int newIndex){
+    if(oldIndex == newIndex){
+      return;
+    }
+    else if(newIndex > oldIndex){
+      setState(() {
+        checkboxes[oldIndex].index = newIndex-1;
+        for(int i = oldIndex+1; i<newIndex;i++){
+          checkboxes[i].index -= 1;
+        }
+        checkboxes.sort((a, b) => a.index > b.index ? 1 : 0,);
+      });
+    }else{
+      checkboxes[oldIndex].index = newIndex;
+      for(int i = newIndex; i<oldIndex;i++){
+        checkboxes[i].index += 1;
+      }
+      checkboxes.sort((a, b) => a.index > b.index ? 1 : 0,);
+    }
+  }
+
+
+  void onReorderChildView(int oldIndex, int newIndex){
+    if(oldIndex == newIndex){
+      return;
+    }
+    else if(newIndex > oldIndex){
+      setState(() {
+        children[oldIndex].index = newIndex-1;
+        for(int i = oldIndex+1; i<newIndex;i++){
+          children[i].index -= 1;
+        }
+      });
+    }else{
+      children[oldIndex].index = newIndex;
+      for(int i = newIndex; i<oldIndex;i++){
+        children[i].index += 1;
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -194,7 +236,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
               List<int> stats = getTaskSize(checkboxes[index].subtasks);
               String statsStr = "Tasks ${stats[0]}/${stats[1]}";
               return GestureDetector(
-                key: Key('$index'),
+                key: Key('${checkboxes[index].index}'),
                 onTap: () => onFirstItemClick(index),
                 child: Card(
                     elevation: 5,
@@ -237,7 +279,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
                     )
                 ),
               );
-            }, onReorder: (int oldIndex, int newIndex) {  },
+            }, onReorder: onReorderFirstView,
         ),
         ),
       ],
@@ -269,6 +311,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
     List<int> stats = getTaskSize(children[index].subtasks);
     String statsStr = "Tasks ${stats[0]}/${stats[1]}";
     return GestureDetector(
+      key: Key('${children[index].index}'),
       onTap: () => onNextItemClick(index),
       child: Card(
           elevation: 5,
@@ -311,6 +354,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
   Widget buildCheckboxCard(BuildContext context, int index){
     bool isCheckable = children[index].subtasks.isEmpty;
     return GestureDetector(
+        key: Key('${children[index].index}'),
         onTap: () => {if(isCheckable){}else{onNextItemClick(index)}},
         onDoubleTap: () => {if(isCheckable){onNextItemClick(index)}else{}},
     child: Card(
@@ -375,7 +419,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
       )),
       body: Column(children: [
         Flexible(child:
-        ListView.builder(
+        ReorderableListView.builder(
             padding: const EdgeInsets.all(8),
             itemCount: children.length,
             itemBuilder: (BuildContext context, int index) {
@@ -384,7 +428,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
               }else{
                 return buildTappableCard(context, index);
               }
-            }
+            }, onReorder: onReorderChildView,
         ),),
       ],
       ),
