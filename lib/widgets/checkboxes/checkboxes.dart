@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -48,7 +47,6 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
     }
   }
 
-
   void onReorderChildView(int oldIndex, int newIndex){
     if(oldIndex == newIndex){
       return;
@@ -59,12 +57,14 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
         for(int i = oldIndex+1; i<newIndex;i++){
           children[i].index -= 1;
         }
+        children.sort((a, b) => a.index > b.index ? 1 : 0,);
       });
     }else{
       children[oldIndex].index = newIndex;
       for(int i = newIndex; i<oldIndex;i++){
         children[i].index += 1;
       }
+      children.sort((a, b) => a.index > b.index ? 1 : 0,);
     }
   }
 
@@ -81,8 +81,8 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
   void onFirstItemClick(int index){
     setState(() {
       parent = checkboxes[index];
-      children = [];
       children = parent.subtasks;
+      children.sort((a, b) => a.index > b.index ? 1 : 0,);
       isFirstView = false;
     });
   }
@@ -92,6 +92,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
       parentTree.add(children[index]);
       parentTreeIndex++;
       children = parentTree[parentTreeIndex].subtasks;
+      children.sort((a, b) => a.index > b.index ? 1 : 0,);
       isFirstView = false;
     });
   }

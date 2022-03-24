@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-
 class CheckboxDataAbstract{
   CheckboxDataAbstract(this.name, this.subtasks, this.index);
   String name;
@@ -57,7 +54,7 @@ class CheckboxDataChild extends CheckboxDataAbstract{
 List<CheckboxDataChild> getTasks(Map<String, dynamic> data){
   List<CheckboxDataChild> tasks = [];
   data.forEach((key, value) {
-    tasks.add(CheckboxDataChild(key, false, getSubtasks(value['subtasks']), value['index']));
+    tasks.add(CheckboxDataChild(key, value['checked'], getSubtasks(value['subtasks']), value['index']));
   });
   return tasks;
 }
@@ -65,7 +62,7 @@ List<CheckboxDataChild> getTasks(Map<String, dynamic> data){
 List<CheckboxDataChild> getSubtasks(Map<String, dynamic> data) {
   List<CheckboxDataChild> subtasks = [];
   data.forEach((key, value) {
-    subtasks.add(CheckboxDataChild(key, false, getSubtasks(value['subtasks']), value['index']));
+    subtasks.add(CheckboxDataChild(key, value['checked'], getSubtasks(value['subtasks']), value['index']));
   });
   return subtasks;
 }
