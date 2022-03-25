@@ -81,19 +81,3 @@ Future<void> _configureLocalTimeZone() async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation("Europe/Warsaw"));
 }
-
-class App extends StatelessWidget {
-  final String initialRoute;
-  const App(this.initialRoute, {Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Time Management',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-       //home: LoadingWidget(),
-    );
-  }
-
-}

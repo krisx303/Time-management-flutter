@@ -68,3 +68,21 @@ List<CheckboxDataChild> getSubtasks(Map<String, dynamic> data) {
 }
 
 List<CheckboxData> databaseCheckboxes = [];
+
+
+List<int> getTaskSize(List<CheckboxDataChild> data){
+  int count = 0, all = 0;
+  for(CheckboxDataChild child in data){
+    if(child.subtasks.isEmpty){
+      all += 1;
+      if(child.checked){
+        count += 1;
+      }
+    }else{
+      List<int> stats = getTaskSize(child.subtasks);
+      count += stats[0];
+      all += stats[1];
+    }
+  }
+  return [count, all];
+}

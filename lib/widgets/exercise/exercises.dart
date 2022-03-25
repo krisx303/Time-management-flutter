@@ -266,7 +266,8 @@ class _ExercisesWidgetState extends State<ExercisesWidget> {
             padding: const EdgeInsets.all(8),
             itemCount: exercises.length,
             itemBuilder: (BuildContext context, int index) {
-              return Dismissible(
+              return
+                Dismissible(
                   background: slideRightBackground(),
                   secondaryBackground: slideLeftBackground(),
                   confirmDismiss: (direction) async {

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/button/gf_button.dart';
 import 'package:time_management/components/app_settings.dart';
+import 'package:time_management/components/main_components.dart';
 import '../../loading_widget.dart';
 import '../calendar/calendar_components.dart';
 import '../categories_data.dart';
@@ -179,7 +180,7 @@ class _AddExerciseTaskWidgetState extends State<AddExerciseTaskWidget> {
               Checkbox(value:refreshing, onChanged: onRefreshingChanged ),
             ],),
             repeatingPicker(repeating, onRepeatingChanged, refreshing == true),
-            TextButton.icon(onPressed: tryConfirm, icon: const Icon(Icons.send), label: const Text("Confirm")),
+            ConfirmButton(tryConfirm: tryConfirm),
           ],
         ),)
     );

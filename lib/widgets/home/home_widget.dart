@@ -53,6 +53,9 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
       tasks = databaseTasks.where(filterList).toList();
     }
     tasks.sort((a, b) => a.from.millisecondsSinceEpoch.compareTo(b.from.millisecondsSinceEpoch));
+    if(tasks.isEmpty){
+      return;
+    }
     start = tasks.first.from;
     countDownTimer = CountdownTimer(
       -DateTime.now().difference(start),

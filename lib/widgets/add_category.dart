@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:time_management/components/app_settings.dart';
+import 'package:time_management/components/main_components.dart';
 import 'package:time_management/loading_widget.dart';
 import 'package:time_management/widgets/calendar/calendar_components.dart';
 
@@ -108,7 +109,7 @@ class _AddCategoryWidgetState extends State<AddCategoryWidget> {
                 pickerColor: color,
                 onColorChanged: onChangeColor,
               ),
-              TextButton.icon(onPressed: tryConfirm, icon: const Icon(Icons.send), label: const Text("Confirm")),
+              ConfirmButton(tryConfirm: tryConfirm),
             ],
           ),
         )
