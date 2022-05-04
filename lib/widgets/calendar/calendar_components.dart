@@ -49,6 +49,18 @@ Padding enterTaskPriorityWidget(Function(String newValue) onChanged){
   ),);
 }
 
+Padding enterNOTWidget(Function(String newValue) onChanged){
+  return Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 10), child: TextField(
+    onChanged: onChanged,
+    keyboardType: TextInputType.number,
+    decoration: const InputDecoration(
+      border: OutlineInputBorder(),
+      labelText: 'Task Number',
+      hintText: 'Enter Number of Tasks',
+    ),
+  ),);
+}
+
 Padding enterTaskDescriptionWidget(Function(String newValue) onChanged){
   return Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 0), child: TextField(
     onChanged: onChanged,
@@ -328,15 +340,15 @@ void showDialogWarningNoNameCategory(BuildContext context){
       });
 }
 
-void showDialogWarningIconChange(BuildContext context, VoidCallback send){
-  showDialog(
+Future<bool?> showDialogWarningIconChange(BuildContext context, VoidCallback send) async {
+  return await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title:const Text("Warning!"),
           content:const Text("Did you know that you can change icon by clicking on the actual icon? :)"),
           actions: <Widget>[
-            FlatButton(onPressed: send, child: const Text('Yes, confirm')),
+            FlatButton(onPressed: () => {send(), Navigator.of(context).pop()}, child: const Text('Yes, confirm')),
             FlatButton(onPressed: (){
               Navigator.of(context).pop();
             }, child: const Text("Wait, what?"))

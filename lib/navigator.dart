@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:time_management/components/app_settings.dart';
@@ -7,7 +6,6 @@ import 'package:time_management/widgets/calendar/calendar.dart';
 import 'package:time_management/widgets/checkboxes/checkboxes.dart';
 import 'package:time_management/widgets/exercise/exercises.dart';
 import 'package:time_management/widgets/from_notification_task.dart';
-import 'package:time_management/widgets/home/home.dart';
 import 'package:time_management/widgets/home/home_widget.dart';
 
 import 'main.dart';
@@ -28,7 +26,7 @@ class MainWidget extends StatefulWidget {
 }
 
 class MainWidgetState extends State<MainWidget> {
-  static int selectedIndex = 1;
+  static int selectedIndex = 2;
   static final List<Widget> _widgetOptions = <Widget>[
     const CheckboxesWidget(),
     const ExercisesWidget(),
@@ -65,12 +63,10 @@ class MainWidgetState extends State<MainWidget> {
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: true,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationItem.tasks(),
+          BottomNavigationItem.todos(),
           BottomNavigationItem.tasks(),
           BottomNavigationItem.home(),
           BottomNavigationItem.calendar(),
-          //BottomNavigationItem.chart(),
-          //BottomNavigationItem.data(),
         ],
         currentIndex: selectedIndex,
         selectedItemColor: mainAppColor,

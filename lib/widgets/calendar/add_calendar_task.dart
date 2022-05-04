@@ -123,7 +123,7 @@ class _AddCalendarTaskWidgetState extends State<AddCalendarTaskWidget> {
   }
 
   void sendToFirestore(){
-    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc("krisuu").collection("schedule");
+    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc(mainAppName).collection("schedule");
     ref.add({
       'name': name,
       'description': description,

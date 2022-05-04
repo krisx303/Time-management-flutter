@@ -10,10 +10,16 @@ class BottomNavigationItem extends BottomNavigationBarItem{
   static const String tasksLabel = "Tasks";
   static const String chartLabel = "Charts";
   static const String dataLabel = "Data";
+  static const String checkboxLabel = "ToDo";
 
   const BottomNavigationItem.calendar(): super(
     icon: const ImageIcon(AssetImage(calendarIconPath)),
     label: calendarLabel,
+  );
+
+  const BottomNavigationItem.todos(): super(
+    icon: const Icon(Icons.task_alt),
+    label: checkboxLabel,
   );
 
   const BottomNavigationItem.home(): super(

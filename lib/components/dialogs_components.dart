@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 
+
 Future<bool?> showDialogWantToDelete(BuildContext context, String content, String title, VoidCallback onYesClick) async{
   return await showDialog(
       context: context,
@@ -13,6 +14,26 @@ Future<bool?> showDialogWantToDelete(BuildContext context, String content, Strin
               Navigator.of(context).pop();
             }),
             DeleteDialogButton(onPressed: () {
+              Navigator.of(context).pop();
+              onYesClick();
+            }),
+          ],
+        );
+      });
+}
+
+Future<bool?> showDialogConfirm(BuildContext context, String content, String title, VoidCallback onYesClick) async{
+  return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            CancelDialogButton(onPressed: () {
+              Navigator.of(context).pop();
+            }),
+            ConfirmDialogButton(onPressed: () {
               Navigator.of(context).pop();
               onYesClick();
             }),
@@ -96,6 +117,18 @@ class DeleteDialogButton extends TextButton{
       child: const Text(
         "Delete",
         style: TextStyle(color: Colors.red),
+      )
+  );
+}
+
+class ConfirmDialogButton extends TextButton{
+  const ConfirmDialogButton({Key? key,
+    required VoidCallback? onPressed,
+  }) : super(key: key,
+      onPressed: onPressed,
+      child: const Text(
+        "Confirm",
+        style: TextStyle(color: Colors.green),
       )
   );
 }

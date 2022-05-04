@@ -105,7 +105,7 @@ class _AddExerciseTaskWidgetState extends State<AddExerciseTaskWidget> {
   }
 
   void sendToFirestore(){
-    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc("krisuu").collection("to-do");
+    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc(mainAppName).collection("to-do");
     ref.add({
       'name': name,
       'priority': priority,
@@ -117,7 +117,7 @@ class _AddExerciseTaskWidgetState extends State<AddExerciseTaskWidget> {
   }
 
   void sendToFirestoreDraft(){
-    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc("krisuu").collection("to-do-draft");
+    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc(mainAppName).collection("to-do-draft");
     ref.add({
       'name': name,
       'priority': priority,

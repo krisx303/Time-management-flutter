@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:time_management/components/app_settings.dart';
 
 class SaveOnFirestoreFloatingButton extends FloatingActionButton{
-  const SaveOnFirestoreFloatingButton(VoidCallback? callback, {Key? key}) :
+  SaveOnFirestoreFloatingButton(VoidCallback? callback, {Key? key}) :
         super(
         key: key,
         onPressed: callback,
-        backgroundColor: Colors.blue,
+        backgroundColor: mainAppColor,
         child: const Icon(Icons.save),
       );
 }

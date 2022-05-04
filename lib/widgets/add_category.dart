@@ -37,11 +37,11 @@ class _AddCategoryWidgetState extends State<AddCategoryWidget> {
     });
   }
 
-  void tryConfirm(){
+  Future<void> tryConfirm() async{
     if(name == ""){
       showDialogWarningNoNameCategory(context);
     }else if(iconData.codePoint == Icons.home.codePoint){
-      showDialogWarningIconChange(context, send);
+      await showDialogWarningIconChange(context, send);
     }
     else{
       send();
@@ -49,7 +49,7 @@ class _AddCategoryWidgetState extends State<AddCategoryWidget> {
   }
 
   void send(){
-    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc("krisuu").collection("categories");
+    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc(mainAppName).collection("categories");
     ref.add({
       'name': name,
       'color': color.value,

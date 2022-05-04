@@ -44,10 +44,22 @@ class _LoadingWidgetState extends State<LoadingWidget> {
   bool dTasks = false;
   bool dExercises = false;
   bool dCheckboxes = false;
+  bool loggedIn = false;
+  bool login = false;
+  String loginName = "", password = "";
+  late SharedPreferences prefs;
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) => downloadData());
+    WidgetsBinding.instance?.addPostFrameCallback((_) async => {
+      prefs = await SharedPreferences.getInstance(),
+      loggedIn = prefs.getBool("loggedIn") == true,
+      if(loggedIn){
+        WidgetsBinding.instance?.addPostFrameCallback((_) => downloadData())
+      },
+      prefs.setBool("loggedIn", false),
+    });
+
   }
 
   Future<void> downloadData() async {
@@ -94,28 +106,75 @@ class _LoadingWidgetState extends State<LoadingWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Column(
-        children: [
-          const Padding(padding: EdgeInsets.fromLTRB(0, 100, 0, 0),),
-          Image(image: const AssetImage("assets/icons/calendar.png"), color: mainAppColor),
-          const Padding(padding: EdgeInsets.fromLTRB(0, 100, 0, 0),),
-          SizedBox(
-            width: 120,
-            height: 120,
-            child: AnimatedOpacity(
-              duration: const Duration(seconds: 1),
-              opacity: 1.0,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: CircularProgressIndicator(
-                  color: mainAppColor,
+        body: Center(child: Column(
+          children: [
+            const Padding(padding: EdgeInsets.fromLTRB(0, 100, 0, 0),),
+            Image(image: const AssetImage("assets/icons/calendar.png"), color: mainAppColor),
+            const Padding(padding: EdgeInsets.fromLTRB(0, 100, 0, 0),),
+            (loggedIn ? SizedBox(
+              width: 120,
+              height: 120,
+              child: AnimatedOpacity(
+                duration: const Duration(seconds: 1),
+                opacity: 1.0,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: CircularProgressIndicator(
+                    color: mainAppColor,
+                  ),
                 ),
               ),
-            ),
-          )
-        ],
-      ),)
+            ) : Column(children: [
+              GFToggle(enabledTrackColor: Colors.blue[800],onChanged: onLoginTypeChanged, value: login),
+              Text(login ? "Register new account" : "Login", style: TextStyle(color: Colors.blue, fontSize: 20),),
+              const Padding(padding: EdgeInsets.fromLTRB(0, 20, 0, 0),),
+              Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 10), child: TextField(
+                onChanged: onLoginNameChanged,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Login',
+                  hintText: 'Enter Login',
+                ),
+              ),),
+              Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 10), child: TextField(
+                onChanged: onLoginNameChanged,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Password',
+                  hintText: 'Enter Password',
+                ),
+              ),),
+              ConfirmButton(tryConfirm: tryConfirm),
+            ],))
+          ],
+        ),)
     );
+  }
+
+  void onLoginNameChanged(String value) {
+    setState(() {
+      loginName = value;
+    });
+  }
+
+  void onPasswordChanged(String value) {
+    setState(() {
+      password = value;
+    });
+  }
+
+  void tryConfirm() {
+    if(login){
+
+    }else{
+
+    }
+  }
+
+  void onLoginTypeChanged(bool? value) {
+    setState(() {
+      login = value == true;
+    });
   }
 }
 
@@ -126,6 +185,7 @@ Future<void> getUserCheckboxesList(VoidCallback onDownloaded) async {
   List<CheckboxData> checkboxes = [];
   for(int i = 0; i<querySnapshot.size; i++){
     var doc = querySnapshot.docs[i];
+    print(doc.data());
     checkboxes.add(CheckboxData.fromJson(doc.id, doc.data()));
   }
   databaseCheckboxes = checkboxes;
@@ -178,17 +238,11 @@ Future<void> getUserTaskList(VoidCallback onDownloaded) async {
 
 void repeatingEveryWeek(DateTime from, doc, Duration between, List<Task> tasks) {
   DateTime dt = DateTime.now().subtract(const Duration(days: 7));
-
-  int h = from.hour;
   while(dt.isAfter(from)){
     from = from.add(const Duration(days: 7));
   }
   for(int i = 0; i<4;i++){
     DateTime nfrom = from.add(Duration(days: (i*7)));
-    int hh = nfrom.hour - h;
-    if(hh != 0){
-     nfrom = nfrom.subtract(Duration(hours: hh));
-    }
     tasks.add(Task(doc.id, doc['name'], doc['description'], doc['type'], nfrom, nfrom.add(between), doc["repeating"], doc['obligatory']));
   }
 }

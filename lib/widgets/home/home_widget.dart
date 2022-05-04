@@ -33,7 +33,6 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
   }
 
   void handleClickOption(String option){
-    print(option);
     switch(option){
       case "Settings":
         Navigator.of(context)
@@ -103,7 +102,9 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
   @override
   void dispose() {
     super.dispose();
-    countDownTimer!.cancel();
+    if(countDownTimer != null){
+      countDownTimer!.cancel();
+    }
   }
 
   @override

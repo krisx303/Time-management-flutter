@@ -125,3 +125,14 @@ double? lerpDouble(num? a, num? b, double t) {
   assert(t.isFinite, 't must be finite when interpolating between values');
   return a * (1.0 - t) + b * t;
 }
+
+PopupMenuItem<int> createPopupMenuItem(int index, String name){
+  return PopupMenuItem(
+    value: index,
+    child: Text(
+      name,
+      style: const TextStyle(
+          color: Colors.black, fontWeight: FontWeight.w500),
+    ),
+  );
+}

@@ -68,7 +68,7 @@ List<CheckboxDataChild> getSubtasks(Map<String, dynamic> data) {
 }
 
 List<CheckboxData> databaseCheckboxes = [];
-
+List<CheckboxDataChild>? cacheCheckboxesDataChild;
 
 List<int> getTaskSize(List<CheckboxDataChild> data){
   int count = 0, all = 0;

@@ -1,13 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/colors/gf_color.dart';
 import 'package:getwidget/components/checkbox/gf_checkbox.dart';
+import 'package:getwidget/components/progress_bar/gf_progress_bar.dart';
 import 'package:getwidget/size/gf_size.dart';
+import 'package:getwidget/types/gf_progress_type.dart';
+import 'package:time_management/components/app_settings.dart';
 import 'package:time_management/components/dialogs_components.dart';
 import 'package:time_management/components/dismissible_components.dart';
 import 'package:time_management/components/floating_buttons.dart';
 import 'package:time_management/components/main_components.dart';
 import 'package:time_management/widgets/calendar/calendar_components.dart';
 import 'package:time_management/widgets/checkboxes/add_checkbox_category.dart';
+import 'package:time_management/widgets/checkboxes/add_checkbox_factory.dart';
 import 'package:time_management/widgets/checkboxes/checkbox_components.dart';
 import 'package:time_management/widgets/checkboxes/checkbox_data.dart';
 import 'package:time_management/widgets/task_data.dart';
@@ -53,19 +58,25 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
         SaveOnFirestoreFloatingButton(saveOnFirestore),
         AddChildFloatingButton(addNewCategory),
       ],
-      body: ReorderableListView.builder(
+      body: Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 70), child: ReorderableListView.builder(
         padding: const EdgeInsets.all(8),
         itemCount: checkboxes.length,
         itemBuilder: categoryViewBuilder,
         onReorder: onReorderCategoryView,
       ),
-    );
+      ));
   }
 
   /// Builder for category cards
   Widget categoryViewBuilder(BuildContext context, int index){
     List<int> stats = getTaskSize(checkboxes[index].subtasks);
-    String statsStr = "Tasks ${stats[0]}/${stats[1]}";
+    String statsStr = "${stats[0]}/${stats[1]}";
+    Color color = Colors.red;
+    double percentage = 0;
+    if(stats[1] != 0){
+      percentage = (stats[0].toDouble())/(stats[1].toDouble());
+      color = getColorByPercent(percentage);
+    }
     return GestureDetector(
       key: Key('${checkboxes[index].index}'),
       onTap: () => onCategoryItemClick(index),
@@ -85,6 +96,20 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
                     ]
                 ),
                 Row(children: [
+                  SizedBox(
+                      width: MediaQuery.of(context).size.width/4,
+                      child: Column(
+                        children: [
+                          GFProgressBar(
+                            lineHeight: 10,
+                            percentage: percentage,
+                            backgroundColor : Colors.black26,
+                            progressBarColor: color,
+                          ),
+                          Text("${(100*percentage).toStringAsFixed(2)}%")
+                        ],
+                      )
+                  ),
                   Icon(getIconDataByType(checkboxes[index].type), color: getColorByType(checkboxes[index].type), size: 60,),
                   TriangleRight(color: getColorByType(checkboxes[index].type)),
                 ],)
@@ -95,6 +120,21 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
 
   /// This method builds every child view
   Widget buildChildView(BuildContext context){
+    List<int> stats = getTaskSize(tree[treeIndex].subtasks);
+    String position = "";
+    for(int i = 0; i<=treeIndex; i++){
+      position += "${tree[i].name} -> ";
+    }
+    position += "HERE :)";
+    Color color = Colors.red;
+    double percentage = 0;
+    if(stats[1] != 0){
+      percentage = (stats[0].toDouble())/(stats[1].toDouble());
+      color = getColorByPercent(percentage);
+    }else{
+      color = Colors.blue;
+      percentage = 1;
+    }
     return ChildViewScaffold(
       appBarTitle: "Category - " + tree[0].name,
       appBarColor: parentColor,
@@ -102,12 +142,31 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
         AddChildFactoryFloatingButton(addNewCheckboxFactory),
         AddChildFloatingButton(addNewCheckbox),
       ],
-      body: ReorderableListView.builder(
-        padding: const EdgeInsets.all(8),
-        itemCount: children.length,
-        itemBuilder: childViewBuilder,
-        onReorder: onReorderChildView,
-      ),
+      body: Column(children: [
+        Card(margin: const EdgeInsets.fromLTRB(12, 12, 12, 1),child: Padding(padding: const EdgeInsets.all(12),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
+            Text(position, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 17),),
+          SizedBox(height: 120, child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
+            GFProgressBar(
+                percentage: percentage,
+                width:100,
+                radius: 90,
+                type: GFProgressType.circular,
+                backgroundColor : Colors.black26,
+                progressBarColor: color
+            ),
+            Text("${(100*percentage).toStringAsFixed(2)}%"),
+          ],),),
+          Text("Wykonano ${stats[0]} na ${stats[1]} zadań."),
+        ],),)),
+        Flexible(child: ReorderableListView.builder(
+          padding: const EdgeInsets.all(8),
+          itemCount: children.length,
+          itemBuilder: childViewBuilder,
+          onReorder: onReorderChildView,
+        )),
+        const Padding(padding: EdgeInsets.fromLTRB(0, 70, 0, 0),)
+      ],)
     );
   }
 
@@ -120,22 +179,60 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
     }
   }
 
+  /// Method which returns color by percent complete task
+  Color getColorByPercent(double percent){
+    if(percent < 0.3){
+      return Colors.redAccent.shade700;
+    }else if(percent < 0.5){
+      return Colors.deepOrange;
+    }else if(percent < 0.75){
+      return Colors.orange;
+    }else if(percent < 1){
+      return Colors.yellow;
+    }
+    return Colors.green;
+  }
+
   /// Builds SubCategory card
   Widget buildSubCategoryCard(BuildContext context, int index){
     List<int> stats = getTaskSize(children[index].subtasks);
     String statsStr = "Tasks ${stats[0]}/${stats[1]}";
+    Color color = Colors.red;
+    double percentage = 0;
+    String name = children[index].name;
+    name = name.length < 20 ? name : name.substring(0, 19) + "...";
+    if(stats[1] != 0){
+      percentage = (stats[0].toDouble())/(stats[1].toDouble());
+      color = getColorByPercent(percentage);
+    }
     return GestureDetector(
       key: Key('${children[index].index}'),
-      onTap: () => onNextItemClick(index),
+      onTap: () => onCheckboxItemClick(index),
       child: CardElement(
           content:[
             CardMainContent(
                 content:[
-                  Text(children[index].name, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 18)),
+                  Text(name, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 18)),
                   Text(statsStr, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 20), textAlign: TextAlign.end,),
                 ]
             ),
-            TriangleRight(color: Colors.black),
+            Row(mainAxisAlignment: MainAxisAlignment.center,children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width/4,
+                child: Column(
+                  children: [
+                    GFProgressBar(
+                      lineHeight: 10,
+                      percentage: percentage,
+                      backgroundColor : Colors.black26,
+                      progressBarColor: color,
+                    ),
+                    Text("${(100*percentage).toStringAsFixed(2)}%")
+                  ],
+                )
+              ),
+              TriangleRight(color: Colors.black),
+            ],)
           ]
       ),
     );
@@ -146,8 +243,8 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
     bool isCheckable = children[index].subtasks.isEmpty;
     return GestureDetector(
       key: Key('${children[index].index}'),
-      onTap: () => {if(isCheckable){}else{onNextItemClick(index)}},
-      onDoubleTap: () => {if(isCheckable){onNextItemClick(index)}else{}},
+      onTap: () => {if(isCheckable){}else{onCheckboxItemClick(index)}},
+      onDoubleTap: () => {if(isCheckable){onCheckboxItemClick(index)}else{}},
       child: CardElement(
         marginHorizontal: 12,
         marginVertical: 6,
@@ -184,7 +281,13 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
 
   /// Action when user want delete category
   void onWantDeleteCategory(int index) async {
-
+    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc(mainAppName).collection('checkboxes');
+    ref.doc(checkboxes[index].id).delete();
+    checkboxes.removeAt(index);
+    for(int i = 0; i<checkboxes.length; i++){
+      checkboxes[i].index = i;
+    }
+    saveOnFirestore();
   }
 
   /// Methods responsible for reorder elements in lists
@@ -207,6 +310,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
     }
     checkboxes.sort((a, b) => a.index > b.index ? 1 : 0,);
   }
+
 
   void onReorderChildView(int oldIndex, int newIndex){
     if(oldIndex == newIndex){
@@ -234,6 +338,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
     treeIndex += 1;
   }
 
+
   void updateChildren(){
     children = tree[treeIndex].subtasks;
     children.sort((a, b) => a.index > b.index ? 1 : 0,);
@@ -249,7 +354,8 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
     });
   }
 
-  void onNextItemClick(int index){
+
+  void onCheckboxItemClick(int index){
     setState(() {
       addTreeElement(children[index]);
       updateChildren();
@@ -260,7 +366,12 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
   /// Opens new widget to add new category
   void addNewCategory(){
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => const AddCheckboxCategoryWidget())).then((value) => { setState((){})});
+        .push(MaterialPageRoute(builder: (context) => const AddCheckboxCategoryWidget())).then((value) => {
+          setState((){
+            checkboxes = databaseCheckboxes;
+            checkboxes.sort((a, b) => a.index > b.index ? 1 : 0,);
+          })
+        });
   }
 
   /// Opens dialog to enter name for new Checkbox
@@ -280,16 +391,37 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
 
   /// Opens new widget to create Checkbox factory
   void addNewCheckboxFactory() async {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => const AddCheckboxFactoryWidget())).then((value) => {
+      setState((){
+        if(cacheCheckboxesDataChild != null){
+          int l = tree[treeIndex].subtasks.length;
+          for(int i = 0;i<cacheCheckboxesDataChild!.length; i++){
+            cacheCheckboxesDataChild![i].index += l;
+            tree[treeIndex].subtasks.add(cacheCheckboxesDataChild![i]);
+          }
+          //saveSingleOnFirestore(tree[0].index);
+        }
+      })
+    });
+  }
 
+  /// Saves single Checkbox Category on Firestore
+  void saveSingleOnFirestore(int index) async {
+    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc(mainAppName).collection('checkboxes');
+    ref.doc(checkboxes[index].id).update(checkboxes[index].toJson());
+    showToast("Data updated successfully :)");
+    setState(() {});
   }
 
   /// Saves data on Firestore
   void saveOnFirestore() async {
-    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc('krisuu').collection('checkboxes');
+    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc(mainAppName).collection('checkboxes');
     for (var element in checkboxes) {
       ref.doc(element.id).update(element.toJson());
     }
     showToast("Data updated successfully :)");
+    setState(() {});
   }
 
   /// Method when back button was pressed in category view

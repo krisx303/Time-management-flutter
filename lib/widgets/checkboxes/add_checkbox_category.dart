@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:time_management/components/app_settings.dart';
 import 'package:time_management/components/main_components.dart';
+import 'package:time_management/widgets/checkboxes/checkbox_data.dart';
 import '../../loading_widget.dart';
 import '../calendar/calendar_components.dart';
 import '../categories_data.dart';
@@ -55,12 +56,13 @@ class _AddCheckboxCategoryWidgetState extends State<AddCheckboxCategoryWidget> {
   }
 
   void sendToFirestore(){
-    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc("krisuu").collection("checkboxes");
+    CollectionReference ref = FirebaseFirestore.instance.collection('users-data').doc(mainAppName).collection("checkboxes");
     ref.add({
       'name': name,
       'type': _categoryChoose.name,
       'subtasks': {},
-    }).then((value) => getUserTaskList(onSentAndUpdated))
+      'index': databaseCheckboxes.length,
+    }).then((value) => getUserCheckboxesList(onSentAndUpdated))
         .catchError((error) => showToast(error));
   }
 
