@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:time_management/components/dialogs_components.dart';
+import 'package:time_management/translate/translator.dart';
 import 'package:time_management/widgets/calendar/time_picker.dart';
 
 import '../categories_data.dart';
@@ -84,29 +86,9 @@ void showToast(String text) {
 }
 
 Future<void> showWarningOnAddTask(BuildContext context) async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // user must tap button!
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Warning'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: const <Widget>[
-              Text('You must select Date on calendar to create new Task'),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
+  await showWarningDialog(
+    context,
+    content: translate(Tran.selectDateOnCalendar),
   );
 }
 
@@ -290,69 +272,13 @@ Container categoryPicker(Category _categoryChoose, Function(Category?) _onDropDo
   );
 }
 
-
-void showDialogWarningDatesSame(BuildContext context){
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title:const Text("Warning!"),
-          content:const Text("Time Start and Stop are the same! Change this!"),
-          actions: <Widget>[
-            FlatButton(onPressed: (){
-              Navigator.of(context).pop();
-            }, child: const Text('OK'))
-          ],
-        );
-      });
-}
-
 void showDialogWarningBefore(BuildContext context, VoidCallback sendTheNextDay){
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title:const Text("Warning!"),
-          content:const Text("The time end is before start! Do you know want to end task on the next day?"),
-          actions: <Widget>[
-            FlatButton(onPressed: sendTheNextDay, child: const Text('Yes')),
-            FlatButton(onPressed: (){
-              Navigator.of(context).pop();
-            }, child: const Text("It's mistake"))
-          ],
-        );
-      });
-}
-
-void showDialogWarningNoNameCategory(BuildContext context){
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title:const Text("Warning!"),
-          content:const Text("Your Category must have a name."),
-          actions: <Widget>[
-            FlatButton(onPressed: (){
-              Navigator.of(context).pop();
-            }, child: const Text('OK'))
-          ],
-        );
-      });
-}
-
-Future<bool?> showDialogWarningIconChange(BuildContext context, VoidCallback send) async {
-  return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title:const Text("Warning!"),
-          content:const Text("Did you know that you can change icon by clicking on the actual icon? :)"),
-          actions: <Widget>[
-            FlatButton(onPressed: () => {send(), Navigator.of(context).pop()}, child: const Text('Yes, confirm')),
-            FlatButton(onPressed: (){
-              Navigator.of(context).pop();
-            }, child: const Text("Wait, what?"))
-          ],
-        );
-      });
+  showWarningDialog(
+    context,
+    content: translate(Tran.timeEndBeforeStart),
+    buttons: [
+      DialogButton.yes(onPressed: () => {sendTheNextDay(), Navigator.pop(context)}),
+      DialogButton.no(onPressed: () => {Navigator.pop(context)})
+    ]
+  );
 }

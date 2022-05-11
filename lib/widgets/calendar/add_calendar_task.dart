@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:time_management/components/app_settings.dart';
+import 'package:time_management/components/dialogs_components.dart';
 import 'package:time_management/components/main_components.dart';
-import 'package:time_management/widgets/task_data.dart';
+import 'package:time_management/translate/translator.dart';
 import '../../loading_widget.dart';
 import '../categories_data.dart';
 import 'calendar_components.dart';
@@ -92,30 +92,18 @@ class _AddCalendarTaskWidgetState extends State<AddCalendarTaskWidget> {
 
   void tryConfirm(){
     if(name == ""){
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title:const Text("Warning!"),
-              content:const Text("Your Task must have a name."),
-              actions: <Widget>[
-                FlatButton(onPressed: (){
-                  Navigator.of(context).pop();
-                }, child: const Text('OK'))
-              ],
-            );
-          });
+      showWarningDialog(context, content: translate(Tran.taskHasNoName));
     }else{
       if(dateTo.isAtSameMomentAs(dateFrom)){
-        showDialogWarningDatesSame(context);
+        showWarningDialog(context, content: translate(Tran.sameDateTimes));
       }
       else if(dateTo.isBefore(dateFrom)){
         showDialogWarningBefore(context, sendTheNextDay);
       }else{
         sendToFirestore();
       }
-      }
     }
+  }
 
   void sendTheNextDay(){
       dateTo = dateTo.add(const Duration(days: 1));

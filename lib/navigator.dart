@@ -62,7 +62,7 @@ class MainWidgetState extends State<MainWidget> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: true,
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationItem.todos(),
           BottomNavigationItem.tasks(),
           BottomNavigationItem.home(),

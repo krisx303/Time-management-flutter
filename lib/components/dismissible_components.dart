@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_management/translate/translator.dart';
 
 
 class SlideRightBackground extends Container{
@@ -71,14 +72,17 @@ class SlideLeftBackground extends Container{
   );
 }
 
+final String delete = " " + translate(Tran.delete);
+final String done = " " + translate(Tran.done);
+
 Widget slideRightDeleteBackground() {
-  return SlideRightBackground(color: Colors.red, icon: Icons.delete, text: " Delete");
+  return SlideRightBackground(color: Colors.red, icon: Icons.delete, text: delete);
 }
 
 Widget slideRightDoneBackground(){
-  return SlideRightBackground(color: Colors.green, icon: Icons.done, text: " Done");
+  return SlideRightBackground(color: Colors.green, icon: Icons.done, text: done);
 }
 
 Widget slideLeftDeleteBackground(){
-  return SlideLeftBackground(color: Colors.red, icon: Icons.delete, text: " Delete");
+  return SlideLeftBackground(color: Colors.red, icon: Icons.delete, text: delete);
 }

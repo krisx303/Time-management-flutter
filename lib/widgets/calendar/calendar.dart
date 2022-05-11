@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:time_management/components/dialogs_components.dart';
+import 'package:time_management/translate/translator.dart';
 import 'package:time_management/widgets/calendar/add_calendar_task.dart';
 import 'package:time_management/widgets/calendar/calendar_components.dart';
 
@@ -13,6 +15,7 @@ class CalendarWidget extends StatefulWidget {
 }
 
 class _CalendarWidgetState extends State<CalendarWidget> {
+
   CalendarController controller = CalendarController();
   bool isEventSelected = false;
   Task? selectedTask;
@@ -34,19 +37,24 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       isEventSelected = false;
       selectedTask = null;
     });
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title:Text(calendarLongPressDetails.appointments?.first.name),
-            content:const Text("Date cell "),
-            actions: <Widget>[
-              FlatButton(onPressed: (){
-                Navigator.of(context).pop();
-              }, child: const Text('close'))
-            ],
-          );
-        });
+    Task task = calendarLongPressDetails.appointments?.first;
+    showOptionsDialog(
+      context,
+      title: calendarLongPressDetails.appointments?.first.name,
+      content: translateArgs(Tran.cellDescription, [
+        timeToString(task.from),
+        timeToString(task.to),
+        task.description,
+      ]),
+      buttons: [
+        DialogButton.delete(onPressed: () => {Navigator.pop(context)}),
+        DialogButton.edit(onPressed: () => {Navigator.pop(context)}),
+      ],
+    );
+  }
+
+  String timeToString(DateTime time){
+    return time.hour.toString().padLeft(2, "0") + ":" + time.minute.toString().padLeft(2, "0");
   }
   void addEvent(){
     if(controller.selectedDate == null){

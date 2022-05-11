@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:time_management/loading_widget.dart';
+import 'package:time_management/translate/translator.dart';
 import 'package:time_management/widgets/from_notification_task.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -63,6 +64,7 @@ void main() async {
     selectedNotificationPayload = notificationAppLaunchDetails!.payload;
     initialRoute = FromTaskNotifyWidget.routeName;
   }
+  await loadLanguage(Language.polish);
   runApp(MaterialApp(
       title: 'Time Management',
       theme: ThemeData(

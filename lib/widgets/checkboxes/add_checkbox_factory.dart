@@ -1,15 +1,11 @@
-import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/toggle/gf_toggle.dart';
 import 'package:time_management/components/app_settings.dart';
 import 'package:time_management/components/dialogs_components.dart';
 import 'package:time_management/components/main_components.dart';
 import 'package:time_management/widgets/checkboxes/checkbox_data.dart';
-import '../../loading_widget.dart';
+import '../../translate/translator.dart';
 import '../calendar/calendar_components.dart';
-import '../categories_data.dart';
 
 class AddCheckboxFactoryWidget extends StatefulWidget {
   const AddCheckboxFactoryWidget({Key? key}) : super(key: key);
@@ -55,19 +51,7 @@ class _AddCheckboxFactoryWidgetState extends State<AddCheckboxFactoryWidget> {
 
   void tryConfirm(){
     if(name == ""){
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title:const Text("Warning!"),
-              content:const Text("Your Task must have a name."),
-              actions: <Widget>[
-                FlatButton(onPressed: (){
-                  Navigator.of(context).pop();
-                }, child: const Text('OK'))
-              ],
-            );
-          });
+      showWarningDialog(context, content: translate(Tran.taskHasNoName),);
     }else{
       save();
     }
@@ -92,22 +76,35 @@ class _AddCheckboxFactoryWidgetState extends State<AddCheckboxFactoryWidget> {
   Widget renderTaskObject(TaskObject object, TaskObject? parent){
     return Card(child: Padding(padding: const EdgeInsets.fromLTRB(10, 5, 10, 5), child: Row(children: [
       Text(object.name),
-      (object == mainObject ? const SizedBox.shrink() :       TextButton.icon(onPressed: () {
-        showDialogWantToDelete(context, "Do you want to delete this object and all its children?", "Deleting object", () {
-            parent!.subtasks.remove(object);
-            setState(() {});
-        });
-      }, icon: const Icon(Icons.delete, color: Colors.red,), label: Container(),)),
+      (object == mainObject ? const SizedBox.shrink() :       TextButton.icon(onPressed: () => deleteTask(parent, object),
+        icon: const Icon(Icons.delete, color: Colors.red,), label: Container(),)),
       Column(children: renderTaskList(object) + [
-        TextButton.icon(onPressed: () {
-          showDialogWithTextField(context,   "Enter task name", tec, "Enter name...", () {
-            object.subtasks.add(TaskObject(tec.text, []));
-            tec.clear();
-            setState(() {});
-          });
-        }, icon: const Icon(Icons.add, color: Colors.blue,), label: Container(),),
+        TextButton.icon(onPressed: () => showDialogAddNewTask(object),
+          icon: const Icon(Icons.add, color: Colors.blue,), label: Container(),),
       ],),
     ],),),);
+  }
+
+  void deleteTask(TaskObject? parent, TaskObject object){
+    parent!.subtasks.remove(object);
+    setState(() {});
+  }
+
+  Future<void> showDialogAddNewTask(TaskObject object) async {
+    await showDialogWithTextField(
+      context,
+      title: translate(Tran.addTask),
+      hint: translate(Tran.enterTask),
+      tec: tec,
+      button: DialogButton.add(onPressed: () => addNewTask(object, tec)),
+    );
+  }
+
+  void addNewTask(TaskObject object, TextEditingController tec){
+    Navigator.pop(context);
+    object.subtasks.add(TaskObject(tec.text, []));
+    tec.clear();
+    setState(() {});
   }
 
   @override

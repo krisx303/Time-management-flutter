@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/button/gf_button.dart';
 import 'package:time_management/components/app_settings.dart';
+import 'package:time_management/components/dialogs_components.dart';
 import 'package:time_management/components/main_components.dart';
+import 'package:time_management/translate/translator.dart';
 import '../../loading_widget.dart';
 import '../calendar/calendar_components.dart';
 import '../categories_data.dart';
@@ -84,19 +86,10 @@ class _AddExerciseTaskWidgetState extends State<AddExerciseTaskWidget> {
 
   void tryConfirm(){
     if(name == "" || priority == 0){
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title:const Text("Warning!"),
-              content:const Text("Your Task must have a name and priority."),
-              actions: <Widget>[
-                FlatButton(onPressed: (){
-                  Navigator.of(context).pop();
-                }, child: const Text('OK'))
-              ],
-            );
-          });
+      showWarningDialog(
+        context,
+        content: translate(Tran.taskHasNoNamePriority)
+      );
     }else if(refreshing == true){
       sendToFirestoreDraft();
     }else{

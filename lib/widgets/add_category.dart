@@ -5,7 +5,10 @@ import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:time_management/components/app_settings.dart';
 import 'package:time_management/components/main_components.dart';
 import 'package:time_management/loading_widget.dart';
+import 'package:time_management/translate/translator.dart';
 import 'package:time_management/widgets/calendar/calendar_components.dart';
+
+import '../components/dialogs_components.dart';
 
 
 class AddCategoryWidget extends StatefulWidget {
@@ -39,9 +42,16 @@ class _AddCategoryWidgetState extends State<AddCategoryWidget> {
 
   Future<void> tryConfirm() async{
     if(name == ""){
-      showDialogWarningNoNameCategory(context);
+      await showWarningDialog(context, content: translate(Tran.categoryHasNoName),);
     }else if(iconData.codePoint == Icons.home.codePoint){
-      await showDialogWarningIconChange(context, send);
+      await showWarningDialog(
+          context,
+          content: translate(Tran.didYouKnowIcon),
+          buttons: [
+            DialogButton(onPressed: () => {Navigator.of(context).pop()}, label: "◉_◉"),
+            DialogButton.yes(onPressed: () => {send(), Navigator.of(context).pop()}),
+          ]
+      );
     }
     else{
       send();

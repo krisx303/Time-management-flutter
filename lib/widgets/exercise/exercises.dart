@@ -7,6 +7,7 @@ import 'package:time_management/components/app_settings.dart';
 import 'package:time_management/components/dialogs_components.dart';
 import 'package:time_management/components/dismissible_components.dart';
 import 'package:time_management/components/main_components.dart';
+import 'package:time_management/translate/translator.dart';
 import 'package:time_management/widgets/add_category.dart';
 import 'package:time_management/widgets/exercise/add_exercise.dart';
 import 'package:time_management/widgets/exercise_data.dart';
@@ -185,14 +186,23 @@ class _ExercisesWidgetState extends State<ExercisesWidget> {
 
   /// Method shows dialog to ask if user want to delete exercise
   Future<bool?> onExerciseSwiped(DismissDirection direction, int index) async {
+    bool? res = false;
     if (direction == DismissDirection.endToStart) {
-      final bool? res = await showDialogWantToDelete(context, "Are you sure you want to delete exercise ${exercises[index].name}?", "Deleting exercise", () => onWantDeleteExercise(index));
-      return res == true;
+      res = await showDefaultDialog(
+          context,
+          title: translate(Tran.delExerciseTitle),
+          content: translateArgs(Tran.delExerciseContent, [exercises[index].name]),
+          button: DialogButton.delete(onPressed: () => onWantDeleteExercise(index))
+      );
     }else if (direction == DismissDirection.startToEnd){
-      final bool? res = await showDialogConfirm(context, "Mark ${exercises[index].name} as completed task?", "Confirming", () => onConfirmed(index));
-      return res == true;
+      res = await showDefaultDialog(
+          context,
+          title: translate(Tran.confirm),
+          content: translateArgs(Tran.markExerciseDone, [exercises[index].name]),
+          button: DialogButton.yes(onPressed: () => onConfirmed(index))
+      );
     }
-    return false;
+    return res == true;
   }
 
   /// Action when user want delete exercise

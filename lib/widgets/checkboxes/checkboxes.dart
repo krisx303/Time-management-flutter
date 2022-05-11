@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:getwidget/colors/gf_color.dart';
 import 'package:getwidget/components/checkbox/gf_checkbox.dart';
 import 'package:getwidget/components/progress_bar/gf_progress_bar.dart';
 import 'package:getwidget/size/gf_size.dart';
@@ -10,6 +9,7 @@ import 'package:time_management/components/dialogs_components.dart';
 import 'package:time_management/components/dismissible_components.dart';
 import 'package:time_management/components/floating_buttons.dart';
 import 'package:time_management/components/main_components.dart';
+import 'package:time_management/translate/translator.dart';
 import 'package:time_management/widgets/calendar/calendar_components.dart';
 import 'package:time_management/widgets/checkboxes/add_checkbox_category.dart';
 import 'package:time_management/widgets/checkboxes/add_checkbox_factory.dart';
@@ -43,10 +43,9 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
   /// Main build method, builds view depends on variable isFirstView
   @override
   Widget build(BuildContext context) {
-    if(isFirstView){
+    if(isFirstView) {
       return WillPopScope(child: buildCategoryView(context), onWillPop: onWillPopFirstView);
-    }
-    else{
+    } else{
       return WillPopScope(child: buildChildView(context), onWillPop: onWillPopNextView);
     }
   }
@@ -83,7 +82,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
       child: Dismissible(
           background: slideRightDeleteBackground(),
           secondaryBackground: Container(),
-          confirmDismiss: (d) => onCategorySwipedRight(d, index),
+          confirmDismiss: (d) => onCategorySwiped(d, index),
           key: Key('${checkboxes[index].index}'),
           child: CardElement(
               hasTopColorBar: true,
@@ -140,7 +139,7 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
       appBarColor: parentColor,
       floatingButtons: [
         AddChildFactoryFloatingButton(addNewCheckboxFactory),
-        AddChildFloatingButton(addNewCheckbox),
+        AddChildFloatingButton(showDialogAddNewCheckbox),
       ],
       body: Column(children: [
         Card(margin: const EdgeInsets.fromLTRB(12, 12, 12, 1),child: Padding(padding: const EdgeInsets.all(12),
@@ -271,9 +270,13 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
   }
 
   /// Method shows dialog to ask if user want to delete category
-  Future<bool?> onCategorySwipedRight(DismissDirection direction, int index) async {
+  Future<bool?> onCategorySwiped(DismissDirection direction, int index) async {
     if (direction == DismissDirection.startToEnd) {
-      final bool? res = await showDialogWantToDelete(context, "Are you sure you want to delete category ${checkboxes[index].name}?", "Deleting category", () => onWantDeleteCategory(index));
+      final bool? res = await showDefaultDialog(context,
+          button: DialogButton.delete(onPressed: () => onWantDeleteCategory(index)),
+          title: translate(Tran.delCategoryTitle),
+          content: translateArgs(Tran.delCategoryContent, [checkboxes[index].name])
+      );
       return res == true;
     }
     return false;
@@ -374,18 +377,22 @@ class _CheckboxesWidgetState extends State<CheckboxesWidget> {
         });
   }
 
+  void addNewCheckbox(TextEditingController tec){
+    setState(() {
+      tree[treeIndex].subtasks.add(CheckboxDataChild(tec.text, false, [], tree[treeIndex].subtasks.length));
+    });
+    Navigator.pop(context);
+  }
+
   /// Opens dialog to enter name for new Checkbox
-  void addNewCheckbox() async {
+  void showDialogAddNewCheckbox() async {
     TextEditingController tec = TextEditingController();
     showDialogWithTextField(
         context,
-        'Adding new category',
-        tec,
-        "Enter name for category:", () {
-          setState(() {
-            tree[treeIndex].subtasks.add(CheckboxDataChild(tec.text, false, [], tree[treeIndex].subtasks.length));
-          });
-        }
+        tec: tec,
+        title: translate(Tran.addSubcategory),
+        hint: translate(Tran.enterSubcategory),
+        button: DialogButton.add(onPressed: () => addNewCheckbox(tec))
     );
   }
 

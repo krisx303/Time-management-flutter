@@ -82,6 +82,8 @@ flutter:
 
   assets:
     - assets/icons/calendar.png
+    - assets/languages/lang_0.csv
+    - assets/languages/lang_1.csv
 
   # To add assets to your application, add an assets section, like this:
   # assets:

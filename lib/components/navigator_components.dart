@@ -1,33 +1,33 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:time_management/translate/translator.dart';
+
+
+final String checkboxLabel = translate(Tran.lists);
+final String tasksLabel = translate(Tran.tasks);
+final String homeLabel = translate(Tran.timeline);
+final String calendarLabel = translate(Tran.calendar);
 
 class BottomNavigationItem extends BottomNavigationBarItem{
   static const String calendarIconPath = "assets/icons/calendar.png";
-
-  static const String calendarLabel = "Calendar";
-  static const String homeLabel = "Home";
-  static const String tasksLabel = "Tasks";
   static const String chartLabel = "Charts";
   static const String dataLabel = "Data";
-  static const String checkboxLabel = "ToDo";
 
-  const BottomNavigationItem.calendar(): super(
+  BottomNavigationItem.calendar(): super(
     icon: const ImageIcon(AssetImage(calendarIconPath)),
     label: calendarLabel,
   );
 
-  const BottomNavigationItem.todos(): super(
+  BottomNavigationItem.todos(): super(
     icon: const Icon(Icons.task_alt),
     label: checkboxLabel,
   );
 
-  const BottomNavigationItem.home(): super(
+  BottomNavigationItem.home(): super(
     icon: const Icon(Icons.home),
     label: homeLabel,
   );
 
-  const BottomNavigationItem.tasks(): super(
+  BottomNavigationItem.tasks(): super(
     icon: const Icon(Icons.inventory_rounded),
     label: tasksLabel,
   );
