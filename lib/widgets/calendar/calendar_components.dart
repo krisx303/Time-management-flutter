@@ -31,10 +31,10 @@ Padding floatingEditEventButton(VoidCallback _onPressed){
 Padding enterTaskNameWidget(Function(String newValue) onChanged){
   return Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 10), child: TextField(
     onChanged: onChanged,
-    decoration: const InputDecoration(
-      border: OutlineInputBorder(),
-      labelText: 'Task Name',
-      hintText: 'Enter Task Name',
+    decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+      labelText: translate(Tran.taskName),
+      hintText: translate(Tran.enterTask),
     ),
   ),);
 }
@@ -66,9 +66,9 @@ Padding enterNOTWidget(Function(String newValue) onChanged){
 Padding enterTaskDescriptionWidget(Function(String newValue) onChanged){
   return Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 0), child: TextField(
     onChanged: onChanged,
-    decoration: const InputDecoration(
-      hintText: 'Description',
-      labelText: 'Description:',
+    decoration: InputDecoration(
+      labelText: translate(Tran.description),
+      hintText: translate(Tran.enterTaskDescription),
     ),
     autofocus: false,
     maxLines: null,
@@ -119,9 +119,9 @@ class DateTextContainer extends Container{
               color: Colors.black,
             ),
             children: <TextSpan>[
-              const TextSpan(text: "From: "),
+              TextSpan(text: " " + translate(Tran.dateFrom) + " "),
               TextSpan(text: dateTextFrom, style: TextStyle(color: colorFrom, fontWeight: FontWeight.bold, fontSize: 20)),
-              const TextSpan(text: " To: "),
+              TextSpan(text: " " + translate(Tran.dateTo) + " "),
               TextSpan(text: dateTextTo, style: TextStyle(color: colorTo, fontWeight: FontWeight.bold, fontSize: 20))
             ]
         )
@@ -174,7 +174,7 @@ Container repeatingPicker(String _repeatingChoose, Function(String?) _onDropDown
           decoration: InputDecoration(
               contentPadding:
               const EdgeInsets.fromLTRB(12, 10, 20, 20),
-              labelText: "Repeating:",
+              labelText: translate(Tran.repeating),
               border: OutlineInputBorder(
                   borderRadius:
                   BorderRadius.circular(10.0))),
@@ -225,7 +225,7 @@ Container categoryPicker(Category _categoryChoose, Function(Category?) _onDropDo
           decoration: InputDecoration(
               contentPadding:
               const EdgeInsets.fromLTRB(12, 10, 20, 20),
-              labelText: "Category:",
+              labelText: translate(Tran.category),
               border: OutlineInputBorder(
                   borderRadius:
                   BorderRadius.circular(10.0))),

@@ -136,7 +136,7 @@ class _AddCalendarTaskWidgetState extends State<AddCalendarTaskWidget> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mainAppColor,
-        title: const Text("Add new Task"),
+        title: Text(translate(Tran.addNewTask)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
@@ -154,11 +154,11 @@ class _AddCalendarTaskWidgetState extends State<AddCalendarTaskWidget> {
             enterTaskDescriptionWidget(onDescriptionChanged),
             categoryPicker(_categoryChoose, _onDropDownItemSelected),
             Row(mainAxisAlignment: MainAxisAlignment.center ,children: [
-              const Text("Task is obligatory?"),
+              Text(translate(Tran.isTaskObligatory)),
               Checkbox(value:obligatory, onChanged: onObligatoryChanged ),
             ],),
             Row(mainAxisAlignment: MainAxisAlignment.center ,children: [
-              const Text("Task is repeating?"),
+              Text(translate(Tran.isTaskRepeating)),
               Checkbox(value:refreshing, onChanged: onRefreshingChanged ),
             ],),
             repeatingPicker(repeating, onRepeatingChanged, refreshing == true),

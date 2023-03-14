@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_management/translate/translator.dart';
 
 import '../widgets/exercise/triangle.dart';
 import 'dart:math' as math;
@@ -82,13 +83,13 @@ class CardMainContent extends Padding{
 
 /// Confirm Button (used to confirm add new element)
 class ConfirmButton extends TextButton{
-  const ConfirmButton({
+  ConfirmButton({
     Key? key,
     required VoidCallback? tryConfirm,
   }) : super(
       key: key,
       onPressed: tryConfirm,
-      child: const TextButtonWithIconChild(label: Icon(Icons.send), icon: Text("Confirm")),
+      child: TextButtonWithIconChild(label: const Icon(Icons.send), icon: Text(translate(Tran.confirm))),
   );
 }
 

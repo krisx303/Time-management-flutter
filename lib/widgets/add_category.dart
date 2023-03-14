@@ -6,8 +6,6 @@ import 'package:time_management/components/app_settings.dart';
 import 'package:time_management/components/main_components.dart';
 import 'package:time_management/loading_widget.dart';
 import 'package:time_management/translate/translator.dart';
-import 'package:time_management/widgets/calendar/calendar_components.dart';
-
 import '../components/dialogs_components.dart';
 
 
@@ -76,10 +74,10 @@ class _AddCategoryWidgetState extends State<AddCategoryWidget> {
   SizedBox enterCategoryNameWidget(Function(String newValue) onChanged){
     return SizedBox(width: MediaQuery.of(context).size.width*0.7,child: TextField(
       onChanged: onChanged,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Category Name',
-        hintText: 'Enter Category Name',
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: translate(Tran.category),
+        hintText: translate(Tran.enterCategoryName),
       ),
     ));
   }
@@ -97,7 +95,7 @@ class _AddCategoryWidgetState extends State<AddCategoryWidget> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: mainAppColor,
-          title: const Text("Add new Category"),
+          title: Text(translate(Tran.addCategory)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),

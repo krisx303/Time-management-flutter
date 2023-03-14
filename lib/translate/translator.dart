@@ -39,6 +39,19 @@ enum Tran{
   settings,
   selectDateOnCalendar,
   taskHasNoNamePriority,
+  startsIn,
+  enterCategoryName,
+  category,
+  addNewTask,
+  isTaskObligatory,
+  isTaskRepeating,
+  taskName,
+  description,
+  enterTaskDescription,
+  dateFrom,
+  dateTo,
+  repeating,
+
 }
 
 enum Language{

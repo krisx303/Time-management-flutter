@@ -1,5 +1,3 @@
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/toggle/gf_toggle.dart';
 import 'package:quiver/async.dart';
@@ -30,6 +28,7 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
   final String addCategory = translate(Tran.addCategory);
   final String settings = translate(Tran.settings);
   final String timeline = translate(Tran.timeline);
+  final String startsIn = translate(Tran.startsIn) + " ";
   @override
   void initState() {
     super.initState();
@@ -168,7 +167,7 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
                                   children: [
                                     Text(tasks[index].name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 20), textAlign: TextAlign.end,),
                                     SizedBox(width: MediaQuery.of(context).size.width*0.6,child: Text(tasks[index].description, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 18), overflow: TextOverflow.visible, maxLines: 2,),),
-                                    Text("Starts in: " + (-DateTime.now().difference(tasks[index].from)).toString().substring(0, 8), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 22)),
+                                    Text(startsIn + (-DateTime.now().difference(tasks[index].from)).toString().substring(0, 8), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 22)),
                                   ],
                                 )
                               ],
