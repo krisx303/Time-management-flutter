@@ -36,6 +36,12 @@ When you have an activity like class or planned activity on some day you can cre
 
 <img src="https://user-images.githubusercontent.com/57154118/226495923-2ebf3814-978a-4a5b-958b-d36a3950997b.jpg"  width="40%">
 
+
+### Home page is timeline with schedule exercises:
+
+<img src="https://user-images.githubusercontent.com/57154118/226499342-7302f148-a6d4-4266-b6ce-f2ffb2642beb.jpg"  width="40%">
+
+
 ## Deadline exercise
 
 When you have an exercise with a planned deadline you can add Deadline Exercise.
